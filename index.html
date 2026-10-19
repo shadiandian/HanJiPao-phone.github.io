@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>憨机炮</title>
 <style>
-  /* 核心修复：防止任何元素撑破屏幕导致浏览器缩放 */
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent; max-width: 100%;}
   html,body{height:100%;margin:0;width:100%;overflow-x:hidden;}
   body{display:flex;align-items:center;justify-content:center;background:#0a0a0f;
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;overflow:hidden}
   
-  /* 限制手机外壳在电脑上预览的宽度，在手机上则是全屏 */
   .phone{width:390px;height:844px;background:#000;border-radius:48px;padding:10px;position:relative;
     box-shadow:0 0 0 2px #2a2a30,0 40px 80px rgba(0,0,0,.8); overflow:hidden}
   .screen{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#f2f2f7}
@@ -22,7 +20,6 @@
   }
   ::-webkit-scrollbar{width:0;height:0}
 
-  /* 状态栏 */
   .statusbar{position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;
     justify-content:space-between;padding:0 28px;font-size:14px;font-weight:600;color:#1a1a1a;
     z-index:100;pointer-events:none}
@@ -37,12 +34,10 @@
     background:currentColor;border-radius:0 2px 2px 0}
   .sb-battery b{display:block;height:100%;width:72%;background:currentColor;border-radius:1px}
 
-  /* 视图 */
   .view{position:absolute;inset:0;display:flex;flex-direction:column;background:#f2f2f7;
     opacity:0;pointer-events:none;transition:opacity .18s;z-index:1;width:100%;overflow:hidden}
   .view.active{opacity:1;pointer-events:auto;z-index:2}
 
-  /* 桌面 */
   #view-home{background:linear-gradient(160deg,#ffd9e8 0%,#f5d1f7 30%,#e3d0ff 60%,#d3c6ff 100%);
     padding-top:90px;align-items:center;overflow:hidden}
   #view-home::before,#view-home::after{content:'';position:absolute;border-radius:50%;filter:blur(50px);opacity:.55;pointer-events:none}
@@ -63,7 +58,6 @@
     background:#ff3b30;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;
     justify-content:center;padding:0 5px;border:2px solid #f7eaff}
 
-  /* 导航 */
   .nav{flex-shrink:0;padding-top:48px;height:104px;display:grid;grid-template-columns:56px minmax(0, 1fr) 56px;
     align-items:center;background:rgba(250,250,252,.94);backdrop-filter:blur(16px);
     -webkit-backdrop-filter:blur(16px);border-bottom:.5px solid rgba(0,0,0,.12);
@@ -73,7 +67,6 @@
     cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:400}
   .nav-btn:active{opacity:.45}
 
-  /* 信息 APP */
   #view-info{background:#fff}
   .tab-page{position:absolute;inset:0;display:none;flex-direction:column}
   .tab-page.active{display:flex}
@@ -113,6 +106,7 @@
   .moment-name{font-size:14px;font-weight:600;color:#4a5b8c}
   .moment-text{font-size:15px;color:#222;margin-top:5px;line-height:1.5;
     white-space:pre-wrap;word-break:break-word}
+  .moment-img{width:100%;max-width:200px;border-radius:8px;margin-top:8px;display:block}
   .moment-foot{font-size:12px;color:#b0b0b6;margin-top:8px}
 
   .me-card{display:flex;align-items:center;gap:14px;padding:24px 20px;background:#fff}
@@ -124,7 +118,6 @@
   .menu-item:active{background:#f7f7fa}
   .menu-val{color:#8e8e93;font-size:14px}
 
-  /* 聊天详情 */
   #view-chat{background:#f2f2f7}
   .chat-title{display:flex;align-items:center;justify-content:center;gap:8px;
     overflow:hidden;min-width:0;padding:0 4px}
@@ -135,12 +128,25 @@
   .msg-row{display:flex;gap:8px;align-items:flex-end}
   .msg-row.me{flex-direction:row-reverse}
   .msg-row .avatar{width:32px;height:32px;font-size:17px}
-  .bubble{max-width:72%;padding:9px 14px;border-radius:18px;font-size:15px;line-height:1.45;
+  
+  .bubble-wrap { display: flex; flex-direction: column; gap: 4px; max-width: 72%; }
+  .msg-row.me .bubble-wrap { align-items: flex-end; }
+  
+  .bubble{width:100%; padding:9px 14px;border-radius:18px;font-size:15px;line-height:1.45;
     background:#fff;color:#111;border-bottom-left-radius:5px;
     box-shadow:0 1px 2px rgba(0,0,0,.07);word-break:break-word;white-space:pre-wrap}
   .msg-row.me .bubble{background:linear-gradient(180deg,#ff8fc6,#ff5fa8);color:#fff;
     border-bottom-left-radius:18px;border-bottom-right-radius:5px}
-  .bubble.typing{display:flex;gap:4px;padding:14px 16px}
+  
+  .bubble-img { width: 100%; border-radius: 12px; display: block; }
+  
+  .msg-tools { display: flex; gap: 6px; padding: 0 4px; }
+  .msg-tool { font-size: 12px; color: #ff6bb5; background: #fff; padding: 4px 8px; border-radius: 10px;
+    cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.05); display: flex; align-items: center; gap: 4px; }
+  .msg-tool:active { background: #ffe6f2; }
+  .msg-tool.playing { background: #ff6bb5; color: #fff; }
+
+  .bubble.typing{display:flex;gap:4px;padding:14px 16px; width: fit-content;}
   .bubble.typing i{width:7px;height:7px;border-radius:50%;background:#c4c4cc;display:block;
     animation:bounce 1.2s infinite}
   .bubble.typing i:nth-child(2){animation-delay:.16s}
@@ -160,10 +166,10 @@
     background:#ff6bb5;color:#fff;font-size:14px;font-weight:600;cursor:pointer;
     font-family:inherit;flex-shrink:0}
   .input-bar button#recvBtn{background:#8b5cf6}
+  .input-bar button.icon-btn{background:#f2f2f7;color:#666;padding:0 12px;font-size:18px}
   .input-bar button:disabled{opacity:.4}
   .input-bar button:active:not(:disabled){transform:scale(.95)}
 
-  /* 通用卡片与输入框 */
   .card{background:#fff;border-radius:16px;padding:4px 16px;
     box-shadow:0 1px 3px rgba(0,0,0,.04);margin:0 12px;width:calc(100% - 24px)}
   .hint{font-size:12px;color:#a5a5ad;line-height:1.7;padding:8px 20px 0;word-break:break-all}
@@ -171,50 +177,18 @@
   .mfield{margin:16px 0;width:100%}
   .mfield label{display:block;font-size:13px;color:#666;margin-bottom:8px;font-weight:500}
   
-  /* 核心强迫症修复：全部 input / select 绝对占满，高度完全一致 */
   .mfield input, .mfield select {
-    width: 100%;
-    height: 52px;
-    border: 1px solid #e5e5ea;
-    border-radius: 16px;
-    padding: 0 16px;
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    background: #f9f9fb;
-    color: #333;
-    transition: border-color .2s, background-color .2s;
-    -webkit-appearance: none;
-    appearance: none;
-    box-sizing: border-box;
+    width: 100%; height: 52px; border: 1px solid #e5e5ea; border-radius: 16px; padding: 0 16px;
+    font-size: 16px; font-family: inherit; outline: none; background: #f9f9fb; color: #333;
+    transition: border-color .2s, background-color .2s; -webkit-appearance: none; appearance: none; box-sizing: border-box;
   }
-
   .mfield textarea {
-    width: 100%;
-    min-height: 100px;
-    border: 1px solid #e5e5ea;
-    border-radius: 16px;
-    padding: 14px 16px;
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    background: #f9f9fb;
-    color: #333;
-    transition: border-color .2s, background-color .2s;
-    box-sizing: border-box;
-    resize: vertical;
-    line-height: 1.5;
-    word-break: break-all;
+    width: 100%; min-height: 100px; border: 1px solid #e5e5ea; border-radius: 16px; padding: 14px 16px;
+    font-size: 16px; font-family: inherit; outline: none; background: #f9f9fb; color: #333;
+    transition: border-color .2s, background-color .2s; box-sizing: border-box; resize: vertical; line-height: 1.5; word-break: break-all;
   }
-
-  .mfield input:focus, .mfield textarea:focus, .mfield select:focus {
-    border-color: #ff6bb5;
-    background: #fff;
-  }
-  
+  .mfield input:focus, .mfield textarea:focus, .mfield select:focus { border-color: #ff6bb5; background: #fff; }
   .mfield input::placeholder,.mfield textarea::placeholder{color:#b0b0b5}
-  
-  /* 下拉框自定义小箭头 */
   .mfield select{
     background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 16px center; background-size:14px; padding-right:40px;
@@ -245,7 +219,6 @@
   .wb-meta{font-size:11px;color:#ff6bb5;margin-top:4px}
   .wb-content{font-size:13px;color:#8e8e93;margin-top:6px;line-height:1.5;word-break:break-all}
 
-  /* API设置 */
   .api-tabs{flex-shrink:0;display:flex;gap:6px;padding:10px 12px;background:#f2f2f7;width:100%}
   .api-tab{flex:1;height:40px;border-radius:12px;border:none;background:#fff;
     font-size:14px;font-weight:600;color:#666;cursor:pointer;font-family:inherit;
@@ -266,13 +239,8 @@
   .fetch-btn:active{background:#ffe6f2}
   .fetch-btn:disabled{opacity:.5;cursor:not-allowed}
 
-  /* 图片测试自适应 */
-  #imgTestResult img {
-    width: 100% !important; max-width: 100% !important; height: auto !important;
-    border-radius: 12px; display: block; object-fit: contain;
-  }
+  #imgTestResult img { width: 100% !important; max-width: 100% !important; height: auto !important; border-radius: 12px; display: block; object-fit: contain; }
 
-  /* 系统页 */
   .sys-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0}
   .sys-title{font-size:16px;font-weight:600;color:#111}
   .sys-desc{font-size:12px;color:#8e8e93;margin-top:4px;line-height:1.5}
@@ -291,7 +259,6 @@
   .status-value{color:#b0b0b6;font-weight:500}
   .status-value.ok{color:#2fbf6a;font-weight:600}
 
-  /* 模态框 & Toast */
   .modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.42);display:flex;
     align-items:flex-end;justify-content:center;z-index:300;opacity:0;pointer-events:none;
     transition:opacity .2s;overflow:hidden}
@@ -327,7 +294,6 @@
       </span>
     </div>
 
-    <!-- 桌面 -->
     <div class="view active" id="view-home">
       <div class="home-clock">
         <div class="hc-time" id="homeTime">9:41</div>
@@ -336,7 +302,6 @@
       <div class="app-grid" id="appGrid"></div>
     </div>
 
-    <!-- 信息 App -->
     <div class="view" id="view-info">
       <div class="tab-page active" data-tab="chats">
         <div class="nav">
@@ -378,7 +343,6 @@
       </div>
     </div>
 
-    <!-- 聊天详情 -->
     <div class="view" id="view-chat">
       <div class="nav">
         <button class="nav-btn" id="chatBack">‹</button>
@@ -390,13 +354,13 @@
       </div>
       <div class="messages" id="messages"></div>
       <div class="input-bar">
+        <button class="icon-btn" id="imgBtn" title="发图片">🖼️</button>
         <input id="msgInput" placeholder="发消息…" autocomplete="off">
         <button id="sendBtn">发送</button>
         <button id="recvBtn">接收</button>
       </div>
     </div>
 
-    <!-- API 设置 -->
     <div class="view" id="view-api">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -409,8 +373,6 @@
         <button class="api-tab" data-api-tab="image">生图设置</button>
       </div>
       <div class="scroll-body">
-
-        <!-- API 板块 -->
         <div class="api-panel active" data-api-panel="api">
           <div class="api-section-title">主 API <span class="sub">用于线上/线下聊天</span></div>
           <div class="card">
@@ -452,10 +414,8 @@
             </div>
             <button class="btn secondary" id="copyFromMain" style="margin:4px 0 14px">从主 API 复制 URL 和 Key</button>
           </div>
-          <div class="hint">兼容 OpenAI 格式的接口均可。如果填写中转站，确保其支持标准 /v1 接口。</div>
         </div>
 
-        <!-- 语音设置板块 -->
         <div class="api-panel" data-api-panel="voice">
           <div class="api-section-title">MiniMax 语音 <span class="sub">外接 T2A 语音合成</span></div>
           <div class="card">
@@ -478,16 +438,14 @@
             <div class="mfield"><label>音量 volume（0 ~ 10）</label>
               <input type="number" id="voiceVolume" min="0" max="10" step="0.5" value="1.0"></div>
           </div>
-          <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
+          <div class="api-section-title">测试</div>
           <div class="card">
             <div class="mfield"><label>测试文本</label>
               <input type="text" id="ttsTestText" placeholder="你好，我是林小满。"></div>
             <button class="btn secondary" id="ttsTestBtn" style="margin:4px 0 14px">生成并播放</button>
           </div>
-          <div class="hint">返回的是 hex 编码音频，程序会自动转成 blob 播放。</div>
         </div>
 
-        <!-- 生图设置板块 -->
         <div class="api-panel" data-api-panel="image">
           <div class="api-section-title">GPT 生图 <span class="sub">外接 OpenAI Images</span></div>
           <div class="card">
@@ -524,7 +482,7 @@
               </select>
             </div>
           </div>
-          <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
+          <div class="api-section-title">测试</div>
           <div class="card">
             <div class="mfield"><label>测试 Prompt</label>
               <input type="text" id="imgTestPrompt" placeholder="一只在粉紫色夜空下散步的猫"></div>
@@ -532,15 +490,12 @@
             <div id="imgTestResult" style="padding-bottom:14px"></div>
           </div>
         </div>
-
       </div>
-      <div style="flex-shrink:0;padding:10px 12px calc(14px + env(safe-area-inset-bottom));
-        background:rgba(250,250,252,.96);border-top:.5px solid rgba(0,0,0,.1);width:100%">
+      <div style="flex-shrink:0;padding:10px 12px calc(14px + env(safe-area-inset-bottom));background:rgba(250,250,252,.96);border-top:.5px solid rgba(0,0,0,.1);width:100%">
         <button class="btn" id="saveApiBtn" style="margin:0">保存全部设置</button>
       </div>
     </div>
 
-    <!-- 美化 -->
     <div class="view" id="view-beauty">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -554,7 +509,6 @@
       </div>
     </div>
 
-    <!-- 记忆 -->
     <div class="view" id="view-memory">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -567,11 +521,19 @@
             <input type="number" id="setMemory" min="2" max="200"></div>
         </div>
         <div class="hint">按消息条数裁剪，不要求严格一问一答。20 条 ≈ 10 轮对话。<br>条数越少越省 token，越多越记得住。</div>
-        <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveMemoryBtn">保存</button>
+        
+        <div class="api-section-title">长期记忆胶囊</div>
+        <div class="card">
+           <div class="mfield"><label>当前角色</label>
+             <select id="memoryCharSelect"></select></div>
+           <button class="btn secondary" id="summarizeBtn">压缩当前角色聊天为记忆</button>
+           <div id="memoryList" style="margin-top:14px; padding-bottom:14px;"></div>
+        </div>
+        
+        <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveMemoryBtn">保存设置</button>
       </div>
     </div>
 
-    <!-- 世界书 -->
     <div class="view" id="view-worldbook">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -581,7 +543,6 @@
       <div class="scroll-body" id="wbBody"></div>
     </div>
 
-    <!-- 数据 -->
     <div class="view" id="view-data">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -598,7 +559,6 @@
       </div>
     </div>
 
-    <!-- 系统 -->
     <div class="view" id="view-system">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -618,19 +578,12 @@
             </label>
           </div>
         </div>
-
         <div class="api-section-title">保活状态</div>
         <div class="card" id="keepAliveStatus"></div>
-
-        <div class="hint" style="padding:14px 6px 0">
-          后台保活仅在前台有效。iOS Safari 切到后台、锁屏或切 App 时，屏幕常亮和音频都会被系统暂停，无法真正做到后台常驻。<br><br>
-          建议把本页「添加到主屏幕」后再用，效果稍好。<br><br>
-          保活开关不持久化，重新打开页面后需要手动再开。
-        </div>
+        <div class="hint" style="padding:14px 6px 0">后台保活仅在前台有效。iOS Safari 切到后台、锁屏或切 App 时，屏幕常亮和音频都会被系统暂停，无法真正做到后台常驻。</div>
       </div>
     </div>
 
-    <!-- 模态框 -->
     <div class="modal-mask" id="modalMask">
       <div class="modal">
         <div class="modal-head">
@@ -646,10 +599,10 @@
 
 <script>
 /* ==========================================================
-   憨机炮 —— 单文件 AI 小手机
+   憨机炮 —— 单文件 AI 小手机 v4
    ========================================================== */
 const LS_KEY = 'hanjipao_v1';
-const DATA_VERSION = 2;
+const DATA_VERSION = 3; // 版本升级：支持记忆胶囊
 
 const HOME_APPS = [
   { id:'info',      name:'信息',     icon:'💬', bg:'linear-gradient(180deg,#7fe3a3,#2fbf6a)' },
@@ -677,7 +630,7 @@ const DEFAULT_DATA = {
     { id:'c_che', name:'阿澈', avatar:'⚡', persona:'和用户认识多年的损友，嘴毒心软，说话直来直去爱吐槽，但关键时刻特别靠谱。喜欢打游戏、熬夜、喝冰美式。', greeting:'哟，稀客啊。怎么想起来找我了？说吧，又摊上什么事了。', added:true, isGroup:false, members:[] },
     { id:'c_su', name:'苏念', avatar:'🍰', persona:'22 岁，楼下甜品店的店员，甜度超标的邻家女孩。说话喜欢带「呀」「啦」「～」，会分享今天新做的蛋糕，偶尔害羞。', greeting:'呀，是你！今天店里新做了草莓千层，我特意给你留了一块～（小声）别告诉别人哦。', added:false, isGroup:false, members:[] }
   ],
-  chats: {}, moments: [], worldbook: [], wallet: { balance: 0 }
+  chats: {}, moments: [], worldbook: [], memories: {}, wallet: { balance: 0 }
 };
 
 let data = loadData();
@@ -706,18 +659,10 @@ function toast(msg, ms=1800){
   $('screen').appendChild(el); setTimeout(()=>el.remove(), ms);
 }
 
-/* 数据迁移与存储 */
+/* 数据存储 */
 function migrateSettings(old){
   const base = clone(DEFAULT_DATA.settings);
   if (!old || typeof old !== 'object') return base;
-  if (old.baseURL || old.apiKey || old.model) {
-    base.mainApi.baseURL = old.baseURL || base.mainApi.baseURL;
-    base.mainApi.apiKey  = old.apiKey  || '';
-    base.mainApi.model   = old.model   || base.mainApi.model;
-    base.subApi.baseURL  = old.baseURL || base.subApi.baseURL;
-    base.subApi.apiKey   = old.apiKey  || '';
-    base.subApi.model    = old.model   || base.subApi.model;
-  }
   if (old.mainApi) base.mainApi = Object.assign(base.mainApi, old.mainApi);
   if (old.subApi)  base.subApi  = Object.assign(base.subApi,  old.subApi);
   if (old.voice)   base.voice   = Object.assign(base.voice,   old.voice);
@@ -738,12 +683,12 @@ function loadData(){
       user: Object.assign(base.user, p.user||{}),
       characters: Array.isArray(p.characters)&&p.characters.length ? p.characters : base.characters,
       chats: p.chats||{}, moments: p.moments||[], worldbook: p.worldbook||[],
-      wallet: Object.assign(base.wallet, p.wallet||{})
+      memories: p.memories||{}, wallet: Object.assign(base.wallet, p.wallet||{})
     };
   }catch(e){ return clone(DEFAULT_DATA); }
 }
 function saveData(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){ toast('保存失败：存储空间可能已满'); }
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){ toast('保存失败：空间已满'); }
 }
 
 /* 视图 */
@@ -842,6 +787,7 @@ function renderMomentsTab(){
       <div class="moment-body">
         <div class="moment-name">${esc(m.authorName)}</div>
         <div class="moment-text">${esc(m.content)}</div>
+        ${m.imageUrl ? `<img class="moment-img" src="${esc(m.imageUrl)}">` : ''}
         <div class="moment-foot">${fmtTime(m.ts)}</div>
       </div>
     </div>`).join('');
@@ -881,12 +827,94 @@ function openChat(id){
 function renderMessages(){
   const box=$('messages'), c=getChar(currentCharId), msgs=data.chats[currentCharId]||[];
   if(!msgs.length){ box.innerHTML='<div class="sys-msg" style="color:#b6b6bd">还没有聊天记录</div>'; return; }
-  box.innerHTML=msgs.map(m=>{
-    if(m.role==='user') return `<div class="msg-row me"><div class="bubble">${esc(m.content)}</div></div>`;
-    return `<div class="msg-row them"><div class="avatar">${esc(c?c.avatar:'🙂')}</div><div class="bubble">${esc(m.content)}</div></div>`;
+  
+  box.innerHTML=msgs.map((m, idx)=>{
+    const isMe = m.role==='user';
+    // 判断是否包含图片
+    const imgRegex = /\[图片[:：]\s*(.+?)\]/;
+    const match = m.content.match(imgRegex);
+    let contentHtml = '';
+    
+    if (m.imageUrl) {
+      contentHtml = `<img class="bubble-img" src="${esc(m.imageUrl)}">`;
+      if (match) contentHtml += `<div style="margin-top:6px">${esc(m.content.replace(match[0],''))}</div>`;
+    } else if (match) {
+      // 有图片标记，但还没生成好
+      contentHtml = `<div style="color:#999; font-size:12px;">[正在生成图片...]</div>`;
+    } else {
+      contentHtml = esc(m.content);
+    }
+    
+    const avatarHtml = isMe ? '' : `<div class="avatar">${esc(c?c.avatar:'🙂')}</div>`;
+    const toolsHtml = isMe ? '' : `
+      <div class="msg-tools">
+        <div class="msg-tool" onclick="playVoice(${idx}, this)">🔊 语音</div>
+      </div>
+    `;
+    
+    return `
+    <div class="msg-row ${isMe?'me':'them'}" id="msg-${idx}">
+      ${avatarHtml}
+      <div class="bubble-wrap">
+        <div class="bubble">${contentHtml}</div>
+        ${toolsHtml}
+      </div>
+    </div>`;
   }).join('');
+  
   box.scrollTop=box.scrollHeight;
+  
+  // 异步补齐缺失的图片
+  msgs.forEach((m, idx) => {
+    if (!m.imageUrl) {
+      const match = m.content.match(/\[图片[:：]\s*(.+?)\]/);
+      if (match) {
+        const prompt = match[1];
+        callImage(prompt).then(url => {
+          m.imageUrl = url;
+          saveData();
+          if(currentCharId === currentCharId) renderMessages(); // 刷新
+        }).catch(e => console.error(e));
+      }
+    }
+  });
 }
+
+/* 播放语音逻辑 */
+let currentAudio = null;
+async function playVoice(idx, btn) {
+  const msg = data.chats[currentCharId][idx];
+  if (!msg || !msg.content) return;
+  
+  if (btn.classList.contains('playing')) {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    btn.classList.remove('playing'); btn.textContent = '🔊 语音';
+    return;
+  }
+
+  if (!data.settings.voice.apiKey) { toast('请先在 API 设置中填写 MiniMax 配置'); return; }
+  
+  btn.classList.add('playing'); btn.textContent = '⏳ 生成中';
+  try {
+    // 去除动作描写和图片标记
+    const cleanText = msg.content.replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '').replace(/\[图片[:：][^\]]+\]/g, '').trim();
+    if (!cleanText) throw new Error('没有可读的文字');
+    
+    const url = await callTTS(cleanText);
+    if (currentAudio) currentAudio.pause();
+    currentAudio = new Audio(url);
+    
+    btn.textContent = '⏸ 播放中';
+    currentAudio.onended = () => {
+      btn.classList.remove('playing'); btn.textContent = '🔊 语音';
+    };
+    currentAudio.play();
+  } catch (e) {
+    toast('语音失败：' + e.message);
+    btn.classList.remove('playing'); btn.textContent = '🔊 语音';
+  }
+}
+
 function updateRecvBtn(){
   const msgs=data.chats[currentCharId]||[], last=msgs[msgs.length-1];
   $('recvBtn').disabled = busy || !last || last.role!=='user';
@@ -898,6 +926,32 @@ function sendMessage(){
   data.chats[currentCharId].push({role:'user',content:text,ts:Date.now()});
   input.value=''; saveData(); renderMessages(); updateRecvBtn();
 }
+
+// 发送图片
+async function sendImage(){
+  if (busy || !currentCharId) return;
+  const prompt = prompt('描述你想发送的图片画面：');
+  if (!prompt) return;
+  
+  if (!data.settings.image.apiKey) { toast('请先在 API 设置中填写生图配置'); return; }
+  
+  busy = true; updateRecvBtn();
+  const chat = data.chats[currentCharId];
+  chat.push({ role: 'user', content: `[图片: ${prompt}]`, ts: Date.now() });
+  saveData(); renderMessages();
+  
+  try {
+    const url = await callImage(prompt);
+    chat[chat.length-1].imageUrl = url;
+    saveData();
+    if(currentCharId) renderMessages();
+  } catch (e) {
+    toast('生图失败：' + e.message);
+  } finally {
+    busy = false; updateRecvBtn();
+  }
+}
+
 async function receiveMessage(){
   if(busy||!currentCharId) return;
   const c=getChar(currentCharId), chat=data.chats[currentCharId];
@@ -947,9 +1001,9 @@ async function receiveMessage(){
 }
 
 /* ==========================================================
-   提示词构建
+   提示词与记忆构建
    ========================================================== */
-function buildSystemPrompt(c, wb){
+function buildSystemPrompt(c, wb, memories){
   const before=wb.filter(e=>e.position==='before').map(e=>e.content);
   const middle=wb.filter(e=>e.position==='middle').map(e=>e.content);
   const after =wb.filter(e=>e.position==='after').map(e=>e.content);
@@ -961,6 +1015,11 @@ function buildSystemPrompt(c, wb){
     : `你现在正在扮演「${c.name}」，通过手机聊天软件和用户聊天。`;
   parts.push(intro);
   parts.push(`【你的人设】\n${c.persona||'性格温和，善于倾听。'}`);
+  
+  if (memories && memories.length > 0) {
+    parts.push(`【过往记忆】\n${memories.join('\n')}`);
+  }
+  
   if(middle.length) parts.push(middle.join('\n'));
   parts.push(`【关于用户】\n${data.settings.userPersona||'一个普通的年轻人。'}`);
   parts.push(`【聊天规则】
@@ -969,15 +1028,24 @@ function buildSystemPrompt(c, wb){
 3. 可以偶尔用括号描写动作或表情，比如（笑）（歪头看你），但不要滥用。
 4. 不要使用 Markdown，不要用列表、标题、星号加粗。
 5. 保持人设的说话习惯和情绪，可以主动抛话题或反问。
-6. 不要重复用户说过的话。`);
+6. 不要重复用户说过的话。
+7. 如果你想给对方发一张照片，请在回复末尾加上格式：[图片: 图片描述]。`);
   if(after.length) parts.push(after.join('\n'));
   return parts.join('\n\n');
 }
+
 function buildMessages(c, history){
   const wb=(data.worldbook||[]).filter(e=>e.enabled!==false);
-  const sys=buildSystemPrompt(c,wb);
+  const mems = (data.memories || {})[c.id] || [];
+  const sys=buildSystemPrompt(c,wb,mems);
   const out=[{role:'system',content:sys}];
-  const hist=history.map(m=>({role:m.role,content:m.content}));
+  
+  // 处理历史消息，如果有图片，转成文字描述发给 API
+  const hist=history.map(m=>{
+    let text = m.content;
+    if (m.imageUrl) text = `[发送了一张图片] ${text}`;
+    return { role: m.role, content: text };
+  });
 
   const depthItems=wb.filter(e=>e.position==='depth').sort((a,b)=>(b.depth||0)-(a.depth||0));
   for(const item of depthItems){
@@ -1002,7 +1070,7 @@ async function apiRequest(url, options, timeoutMs){
     clearTimeout(timer);
     if(e.name === 'AbortError') throw new Error('请求超时');
     if(e && e.message && /Failed to fetch|NetworkError/i.test(e.message))
-      throw new Error('网络请求失败（可能是 CORS 跨域限制，或地址填错）');
+      throw new Error('网络请求失败（可能是 CORS 跨域限制）');
     throw e;
   }
 }
@@ -1046,8 +1114,7 @@ async function callChat(messages, onDelta, apiType){
 }
 async function callTTS(text){
   const v = data.settings.voice;
-  if(!v.apiKey) throw new Error('请先填写 MiniMax API Key');
-  if(!v.groupId) throw new Error('请先填写 Group ID');
+  if(!v.apiKey) throw new Error('未配置 Key');
   const base = (v.baseURL||'https://api.minimax.chat/v1').trim().replace(/\/+$/,'');
   const url = base + '/t2a_v2?GroupId=' + encodeURIComponent(v.groupId);
   const res = await apiRequest(url, {
@@ -1058,16 +1125,15 @@ async function callTTS(text){
       audio_setting: { sample_rate: 32000, bitrate: 128000, format: 'mp3' }
     })
   }, 60000);
-  if(!res.ok){ let t=''; try{ t=await res.text(); }catch(e){} throw new Error(`HTTP ${res.status} ${t.slice(0,150)}`); }
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const j = await res.json(); const hex = j && j.data && j.data.audio;
-  if(!hex) throw new Error('返回中没有音频数据');
+  if(!hex) throw new Error('无音频数据');
   const bytes = new Uint8Array(hex.match(/../g).map(h=>parseInt(h,16)));
-  const blob = new Blob([bytes], { type:'audio/mpeg' });
-  return URL.createObjectURL(blob);
+  return URL.createObjectURL(new Blob([bytes], { type:'audio/mpeg' }));
 }
 async function callImage(prompt){
   const im = data.settings.image;
-  if(!im.apiKey) throw new Error('请先填写生图 API Key');
+  if(!im.apiKey) throw new Error('未配置 Key');
   let base = (im.baseURL||'https://api.openai.com/v1').trim().replace(/\/+$/,'');
   const url = base.endsWith('/images/generations') ? base : base + '/images/generations';
   const body = { model: im.model || 'dall-e-3', prompt: prompt, n: 1, size: im.size || '1024x1024' };
@@ -1077,12 +1143,11 @@ async function callImage(prompt){
     method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+im.apiKey},
     body: JSON.stringify(body)
   }, 120000);
-  if(!res.ok){ let t=''; try{ t=await res.text(); }catch(e){} throw new Error(`HTTP ${res.status} ${t.slice(0,150)}`); }
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const j = await res.json(); const item = j && j.data && j.data[0];
-  if(!item) throw new Error('返回中没有图片');
   if(item.url) return item.url;
   if(item.b64_json) return 'data:image/png;base64,' + item.b64_json;
-  throw new Error('无法识别返回格式');
+  throw new Error('未知格式');
 }
 async function fetchModels(baseURL, apiKey) {
   if (!baseURL) throw new Error('请先填写 Base URL');
@@ -1090,14 +1155,70 @@ async function fetchModels(baseURL, apiKey) {
   let base = baseURL.trim().replace(/\/+$/, '');
   if (base.endsWith('/chat/completions')) base = base.replace(/\/chat\/completions$/, '');
   else if (base.endsWith('/images/generations')) base = base.replace(/\/images\/generations$/, '');
-  
   const url = base.endsWith('/models') ? base : base + '/models';
   const res = await apiRequest(url, { headers: { 'Authorization': 'Bearer ' + apiKey } }, 30000);
   if (!res.ok) throw new Error(`拉取失败 HTTP ${res.status}`);
   const data = await res.json();
   if (data && Array.isArray(data.data)) return data.data.map(m => m.id);
   if (Array.isArray(data)) return data.map(m => typeof m === 'string' ? m : m.id);
-  throw new Error('无法解析模型列表');
+  throw new Error('无法解析');
+}
+
+/* ==========================================================
+   记忆生成
+   ========================================================== */
+function openMemorySettings(){
+  $('setMemory').value = data.settings.memoryTurns || 20;
+  
+  // 渲染角色下拉框
+  const chars = data.characters.filter(c=>c.added);
+  $('memoryCharSelect').innerHTML = chars.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  
+  // 渲染当前角色的记忆
+  renderMemoryList(chars[0]?.id);
+  
+  $('memoryCharSelect').onchange = (e) => renderMemoryList(e.target.value);
+  showView('memory');
+}
+
+function renderMemoryList(charId) {
+  if (!charId) { $('memoryList').innerHTML = '<div class="empty-tip">没有角色</div>'; return; }
+  const mems = (data.memories || {})[charId] || [];
+  if (mems.length === 0) {
+    $('memoryList').innerHTML = '<div class="empty-tip" style="padding:10px;font-size:12px">暂无记忆胶囊</div>';
+    return;
+  }
+  $('memoryList').innerHTML = mems.map(m => `<div style="padding:10px 0;border-bottom:1px solid #eee;font-size:13px;color:#555">${esc(m)}</div>`).join('');
+}
+
+async function summarizeChat(){
+  const cid = $('memoryCharSelect').value;
+  if (!cid) return;
+  const chat = data.chats[cid] || [];
+  if (chat.length < 4) { toast('聊天记录太少，无需总结'); return; }
+  if (!data.settings.subApi.apiKey) { toast('请先在 API 设置中填写副 API Key'); return; }
+  
+  const btn = $('summarizeBtn');
+  btn.disabled = true; btn.textContent = '正在总结…';
+  try {
+    const textHistory = chat.map(m => `${m.role==='user'?'用户':'角色'}: ${m.content.replace(/\[图片[:：][^\]]+\]/g, '[图片]')}`).join('\n');
+    const prompt = `请阅读以下聊天记录，提取出最重要的事实、设定、情感进展。用一段话（不超过 200 字）总结成“长期记忆”，方便日后回忆。\n\n记录：\n${textHistory}`;
+    
+    const msg = [{role:'system',content:'你是一个精准的总结助手。'}, {role:'user',content:prompt}];
+    const summary = await callChat(msg, null, 'sub');
+    
+    if (!data.memories) data.memories = {};
+    if (!data.memories[cid]) data.memories[cid] = [];
+    data.memories[cid].push(summary.trim());
+    saveData();
+    
+    renderMemoryList(cid);
+    toast('已生成记忆胶囊');
+  } catch (e) {
+    toast('总结失败：' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '压缩当前角色聊天为记忆';
+  }
 }
 
 /* ==========================================================
@@ -1166,21 +1287,57 @@ function editPersona(){
   });
 }
 function momentMenu(){ showModal('朋友圈',`<button class="btn" id="mUserPost">发朋友圈</button><button class="btn secondary" id="mCharPost" style="margin-top:10px">指定角色发朋友圈</button>`,(root)=>{ root.querySelector('#mUserPost').onclick=()=>{ closeModal(); userPostMoment(); }; root.querySelector('#mCharPost').onclick=()=>{ closeModal(); charPostMoment(); }; }); }
-function userPostMoment(){ showModal('发朋友圈',`<div class="mfield"><label>说点什么…</label><textarea id="mText" rows="5"></textarea></div><button class="btn" id="mPost">发布</button>`,(root)=>{ root.querySelector('#mPost').onclick=()=>{ const text=root.querySelector('#mText').value.trim(); if(!text){ toast('写点什么吧'); return; } data.moments.push({id:uid('m'),authorId:'user',authorName:data.user.name,authorAvatar:data.user.avatar,content:text,ts:Date.now()}); saveData(); closeModal(); renderMomentsTab(); toast('已发布'); }; }); }
-function charPostMoment(){ const chars=data.characters.filter(c=>!c.isGroup); if(!chars.length){ toast('先创建联系人'); return; } showModal('指定角色发朋友圈',`<div class="mfield"><label>选择角色</label><select id="mChar">${chars.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div class="mfield"><label>发几条（1～10）</label><input type="number" id="mCount" min="1" max="10" value="1"></div><button class="btn" id="mGen">生成</button>`,(root)=>{ root.querySelector('#mGen').onclick=()=>{ const cid=root.querySelector('#mChar').value; let n=parseInt(root.querySelector('#mCount').value,10)||1; n=Math.max(1,Math.min(10,n)); closeModal(); generateMoments(cid,n); }; }); }
-async function generateMoments(charId, count){
-  const c=getChar(charId); if(!c) return; if(!data.settings.subApi.apiKey){ toast('请先到「API设置」填写副 API Key'); return; }
+function userPostMoment(){ 
+  showModal('发朋友圈',`<div class="mfield"><label>说点什么…</label><textarea id="mText" rows="5"></textarea></div><button class="btn" id="mPost">发布</button>`,(root)=>{ 
+    root.querySelector('#mPost').onclick=()=>{ 
+      const text=root.querySelector('#mText').value.trim(); if(!text){ toast('写点什么吧'); return; } 
+      data.moments.push({id:uid('m'),authorId:'user',authorName:data.user.name,authorAvatar:data.user.avatar,content:text,ts:Date.now()}); 
+      saveData(); closeModal(); renderMomentsTab(); toast('已发布'); 
+    }; 
+  }); 
+}
+function charPostMoment(){ 
+  const chars=data.characters.filter(c=>!c.isGroup); if(!chars.length){ toast('先创建联系人'); return; } 
+  showModal('指定角色发朋友圈',`
+    <div class="mfield"><label>选择角色</label><select id="mChar">${chars.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div>
+    <div class="mfield"><label>发几条（1～10）</label><input type="number" id="mCount" min="1" max="10" value="1"></div>
+    <div class="mfield"><label>是否需要配图？</label><select id="mNeedImg"><option value="no">不需要</option><option value="yes">需要（会调用生图API，较慢）</option></select></div>
+    <button class="btn" id="mGen">生成</button>
+  `,(root)=>{ 
+    root.querySelector('#mGen').onclick=async ()=>{ 
+      const cid=root.querySelector('#mChar').value; 
+      let n=parseInt(root.querySelector('#mCount').value,10)||1; 
+      const needImg = root.querySelector('#mNeedImg').value === 'yes';
+      n=Math.max(1,Math.min(10,n)); closeModal(); generateMoments(cid,n, needImg); 
+    }; 
+  }); 
+}
+async function generateMoments(charId, count, needImg){
+  const c=getChar(charId); if(!c) return; 
+  if(!data.settings.subApi.apiKey){ toast('请先到「API设置」填写副 API Key'); return; }
+  
   toast('正在生成 '+count+' 条朋友圈…', 30000);
   const prompt=`请你以「${c.name}」的身份写 ${count} 条朋友圈。你的人设：${c.persona||'一个普通年轻人'}。要求：1. 每一条都是独立的朋友圈，内容各不相同。2. 每条 15～60 字，口语化。3. 只输出一个 JSON 数组，例如 ["内容一", "内容二"]，不要输出其他文字。`;
   const messages=[{role:'system',content:'你是一个严格只输出 JSON 数组的助手。'},{role:'user',content:prompt}];
+  
   try{
-    const raw=await callChat(messages,null,'sub'); let arr=parseJsonArray(raw); if(!arr||!arr.length) throw new Error('返回内容无法解析');
+    const raw=await callChat(messages,null,'sub'); let arr=parseJsonArray(raw); if(!arr||!arr.length) throw new Error('解析失败');
     arr=arr.slice(0,count); const now=Date.now();
-    arr.forEach((text,i)=>{ data.moments.push({id:uid('m'),authorId:c.id,authorName:c.name,authorAvatar:c.avatar,content:String(text),ts:now-i*60000}); });
-    saveData(); renderMomentsTab(); toast('已生成 '+arr.length+' 条朋友圈');
+    
+    for (let i=0; i<arr.length; i++) {
+      const text = String(arr[i]);
+      let imageUrl = null;
+      if (needImg) {
+        toast('正在生成配图 '+(i+1)+'/'+arr.length+'…');
+        try { imageUrl = await callImage(text); } catch(e) {}
+      }
+      data.moments.push({id:uid('m'),authorId:c.id,authorName:c.name,authorAvatar:c.avatar,content:text,imageUrl,ts:now-i*60000});
+    }
+    saveData(); renderMomentsTab(); toast('已生成朋友圈');
   }catch(e){ toast('生成失败：'+(e.message||e)); }
 }
 function parseJsonArray(text){ if(!text) return null; let s=text.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,''); const a=s.indexOf('['),b=s.lastIndexOf(']'); if(a>=0&&b>a){ try{ const arr=JSON.parse(s.slice(a,b+1)); if(Array.isArray(arr)) return arr.map(x=>typeof x==='string'?x:(x.content||x.text||JSON.stringify(x))).filter(Boolean); }catch(e){} } return s.split('\n').map(x=>x.trim()).filter(Boolean); }
+
 function renderWorldbook(){
   const body=$('wbBody'), list=data.worldbook||[];
   if(!list.length){ body.innerHTML='<div class="empty-tip">还没有条目<br>点右上角 ＋ 创建</div>'; return; }
@@ -1218,9 +1375,6 @@ function openAddChatMenu(){
 }
 function openAddContactMenu(){ showModal('创建',`<button class="btn" id="acNew">创建联系人</button><button class="btn secondary" id="acGroup" style="margin-top:10px">创建群聊</button>`,(root)=>{ root.querySelector('#acNew').onclick=()=>{ closeModal(); editContact(null); }; root.querySelector('#acGroup').onclick=()=>{ closeModal(); createGroup(); }; }); }
 
-/* ==========================================================
-   API 设置页与模型拉取
-   ========================================================== */
 function switchApiTab(tab){
   document.querySelectorAll('.api-tab').forEach(t=>t.classList.toggle('active', t.dataset.apiTab===tab));
   document.querySelectorAll('.api-panel').forEach(p=>p.classList.toggle('active', p.dataset.apiPanel===tab));
@@ -1233,16 +1387,12 @@ function openApiSettings(){
   const s=data.settings;
   $('mainBaseURL').value=s.mainApi.baseURL||''; $('mainApiKey').value=s.mainApi.apiKey||''; $('mainModel').value=s.mainApi.model||'';
   $('mainTemp').value=(s.mainApi.temperature!=null? s.mainApi.temperature : 0.9); $('mainTempVal').textContent=$('mainTemp').value;
-  
   $('subBaseURL').value=s.subApi.baseURL||''; $('subApiKey').value=s.subApi.apiKey||''; $('subModel').value=s.subApi.model||'';
   $('subTemp').value=(s.subApi.temperature!=null? s.subApi.temperature : 0.7); $('subTempVal').textContent=$('subTemp').value;
-  
   $('voiceApiKey').value=s.voice.apiKey||''; $('voiceGroupId').value=s.voice.groupId||''; $('voiceModel').value=s.voice.model||'speech-02-hd';
   $('voiceVoiceId').value=s.voice.voiceId||''; $('voiceSpeed').value=s.voice.speed!=null? s.voice.speed : 1.0; $('voiceVolume').value=s.voice.volume!=null? s.voice.volume : 1.0;
-  
   $('imgBaseURL').value=s.image.baseURL||''; $('imgApiKey').value=s.image.apiKey||'';
   $('imgModel').value=s.image.model||'dall-e-3'; $('imgSize').value=s.image.size||'1024x1024'; $('imgQuality').value=s.image.quality||'standard';
-  
   $('imgTestResult').innerHTML='';
   switchApiTab('api'); showView('api');
 }
@@ -1250,25 +1400,19 @@ function saveApiSettings(){
   const s=data.settings;
   s.mainApi.baseURL=$('mainBaseURL').value.trim(); s.mainApi.apiKey=$('mainApiKey').value.trim(); s.mainApi.model=$('mainModel').value.trim();
   s.mainApi.temperature=parseFloat($('mainTemp').value); if(isNaN(s.mainApi.temperature)) s.mainApi.temperature=0.9;
-  
   s.subApi.baseURL=$('subBaseURL').value.trim(); s.subApi.apiKey=$('subApiKey').value.trim(); s.subApi.model=$('subModel').value.trim();
   s.subApi.temperature=parseFloat($('subTemp').value); if(isNaN(s.subApi.temperature)) s.subApi.temperature=0.7;
-  
   s.voice.apiKey=$('voiceApiKey').value.trim(); s.voice.groupId=$('voiceGroupId').value.trim(); s.voice.model=$('voiceModel').value;
   s.voice.voiceId=$('voiceVoiceId').value.trim(); s.voice.speed=parseFloat($('voiceSpeed').value)||1.0; s.voice.volume=parseFloat($('voiceVolume').value)||1.0;
-  
   s.image.baseURL=$('imgBaseURL').value.trim(); s.image.apiKey=$('imgApiKey').value.trim();
   s.image.model=$('imgModel').value; s.image.size=$('imgSize').value; s.image.quality=$('imgQuality').value;
   saveData(); toast('已保存全部设置');
 }
-function openMemorySettings(){ $('setMemory').value=data.settings.memoryTurns||20; showView('memory'); }
 function saveMemorySettings(){ data.settings.memoryTurns=Math.max(2,Math.min(200, parseInt($('setMemory').value,10)||20)); saveData(); toast('已保存'); }
 
-/* 系统与清空 */
 function renderKeepAliveStatus(){
   const el=$('keepAliveStatus'); if(!el) return; const k=keepAliveState;
-  const audioRunning = !!(k.audioCtx && k.audioCtx.state==='running');
-  const items=[ {label:'运行状态', value:k.active?'已开启':'未开启', ok:k.active}, {label:'屏幕常亮', value:k.wakeLock?'已激活':(k.wakeLockSupported?'未激活':'不支持'), ok:!!k.wakeLock}, {label:'音频保活', value:audioRunning?'运行中':'未运行', ok:audioRunning}, {label:'最近心跳', value:k.lastBeat?new Date(k.lastBeat).toLocaleTimeString():'—', ok:true} ];
+  const items=[ {label:'运行状态', value:k.active?'已开启':'未开启', ok:k.active}, {label:'屏幕常亮', value:k.wakeLock?'已激活':(k.wakeLockSupported?'未激活':'不支持'), ok:!!k.wakeLock}, {label:'音频保活', value:(k.audioCtx&&k.audioCtx.state==='running')?'运行中':'未运行', ok:!!(k.audioCtx&&k.audioCtx.state==='running')}, {label:'最近心跳', value:k.lastBeat?new Date(k.lastBeat).toLocaleTimeString():'—', ok:true} ];
   el.innerHTML=items.map(it=>`<div class="status-row"><span class="status-label">${it.label}</span><span class="status-value ${it.ok?'ok':''}">${it.value}</span></div>`).join('');
 }
 async function requestWakeLock(){ if(!('wakeLock' in navigator)) return; try{ keepAliveState.wakeLock = await navigator.wakeLock.request('screen'); keepAliveState.wakeLock.addEventListener('release', ()=>{ keepAliveState.wakeLock = null; if(keepAliveState.active && document.visibilityState==='visible'){ setTimeout(()=>{ if(keepAliveState.active) requestWakeLock(); }, 1200); } renderKeepAliveStatus(); }); }catch(e){ keepAliveState.wakeLock = null; } }
@@ -1278,12 +1422,9 @@ function stopKeepAlive(){ if(keepAliveState.wakeLock){ try{ keepAliveState.wakeL
 function openSystem(){ $('keepAliveToggle').checked = keepAliveState.active; renderKeepAliveStatus(); showView('system'); }
 function clearChat(){ if(!currentCharId) return; const c=getChar(currentCharId); if(!confirm('清空与「'+(c?c.name:'')+'」的全部记录？')) return; data.chats[currentCharId]=[]; if(c&&c.greeting) data.chats[currentCharId].push({role:'assistant',content:c.greeting,ts:Date.now(),read:true}); saveData(); renderMessages(); updateRecvBtn(); toast('已清空'); }
 function exportData(){ const s=JSON.stringify(data,null,2); $('importArea').value=s; try{ navigator.clipboard.writeText(s); toast('已复制到剪贴板'); }catch(e){ toast('已导出到下方文本框'); } }
-function importData(){ const s=$('importArea').value.trim(); if(!s){ toast('请先粘贴 JSON'); return; } try{ const p=JSON.parse(s); if(!p||!Array.isArray(p.characters)) throw new Error('格式不对'); data=p; data.version=DATA_VERSION; data.settings=migrateSettings(p.settings); data.user=Object.assign(clone(DEFAULT_DATA.user), p.user||{}); data.wallet=Object.assign(clone(DEFAULT_DATA.wallet), p.wallet||{}); data.chats=data.chats||{}; data.moments=data.moments||[]; data.worldbook=data.worldbook||[]; saveData(); renderHome(); showView('home'); toast('导入成功'); }catch(e){ toast('导入失败：'+e.message); } }
+function importData(){ const s=$('importArea').value.trim(); if(!s){ toast('请先粘贴 JSON'); return; } try{ const p=JSON.parse(s); if(!p||!Array.isArray(p.characters)) throw new Error('格式不对'); data=p; data.version=DATA_VERSION; data.settings=migrateSettings(p.settings); data.user=Object.assign(clone(DEFAULT_DATA.user), p.user||{}); data.wallet=Object.assign(clone(DEFAULT_DATA.wallet), p.wallet||{}); data.chats=data.chats||{}; data.moments=data.moments||[]; data.worldbook=data.worldbook||[]; if(!data.memories) data.memories={}; saveData(); renderHome(); showView('home'); toast('导入成功'); }catch(e){ toast('导入失败：'+e.message); } }
 function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) return; if(!confirm('真的确定吗？')) return; localStorage.removeItem(LS_KEY); data=loadData(); renderHome(); showView('home'); toast('已清空'); }
 
-/* ==========================================================
-   事件绑定 & 启动
-   ========================================================== */
 (function init(){
   renderHome();
   document.querySelectorAll('#view-info .tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
@@ -1292,6 +1433,7 @@ function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) 
   $('chatBack').addEventListener('click',()=>{ renderHome(); showView('info'); switchTab('chats'); });
   $('sendBtn').addEventListener('click', sendMessage);
   $('recvBtn').addEventListener('click', receiveMessage);
+  $('imgBtn').addEventListener('click', sendImage);
   $('msgInput').addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.isComposing){ e.preventDefault(); sendMessage(); } });
 
   $('addChatBtn').addEventListener('click', openAddChatMenu);
@@ -1307,7 +1449,6 @@ function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) 
     toast('已从主 API 复制 URL 和 Key');
   });
 
-  // 拉取模型事件
   document.querySelectorAll('.fetch-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const type = btn.dataset.type;
@@ -1321,7 +1462,6 @@ function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) 
       try {
         const models = await fetchModels(baseURL, apiKey);
         if (!models.length) throw new Error('返回的模型列表为空');
-        
         showModal('选择模型', `
           <div style="max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
             ${models.map(m => `<div class="check-item model-opt" data-id="${esc(m)}" style="cursor:pointer;justify-content:center;padding:14px">${esc(m)}</div>`).join('')}
@@ -1331,23 +1471,15 @@ function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) 
             el.onclick = () => {
               const modelId = el.dataset.id;
               if (type === 'image') {
-                // 生图如果是 select，尽量选中对应的，如果没有就加一个 option
                 const sel = $(targetInputId);
                 let found = false;
-                for (let opt of sel.options) {
-                  if (opt.value === modelId) { found = true; break; }
-                }
-                if (!found) {
-                  const newOpt = document.createElement('option');
-                  newOpt.value = modelId; newOpt.textContent = modelId;
-                  sel.appendChild(newOpt);
-                }
+                for (let opt of sel.options) if (opt.value === modelId) { found = true; break; }
+                if (!found) { const newOpt = document.createElement('option'); newOpt.value = modelId; newOpt.textContent = modelId; sel.appendChild(newOpt); }
                 sel.value = modelId;
               } else {
                 $(targetInputId).value = modelId;
               }
-              closeModal();
-              toast('已选择模型：' + modelId);
+              closeModal(); toast('已选择模型：' + modelId);
             };
           });
         });
@@ -1361,6 +1493,8 @@ function clearAll(){ if(!confirm('确定清空全部数据？不可恢复！')) 
 
   $('saveApiBtn').addEventListener('click', saveApiSettings);
   $('saveMemoryBtn').addEventListener('click', saveMemorySettings);
+  $('summarizeBtn').addEventListener('click', summarizeChat);
+  
   $('clearChatBtn').addEventListener('click', clearChat);
   $('exportBtn').addEventListener('click', exportData);
   $('importBtn').addEventListener('click', importData);
