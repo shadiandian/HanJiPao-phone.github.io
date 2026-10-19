@@ -171,22 +171,54 @@
   .mfield{margin:16px 0;width:100%}
   .mfield label{display:block;font-size:13px;color:#666;margin-bottom:8px;font-weight:500}
   
-  .mfield input[type=text],.mfield input[type=password],.mfield input[type=number],
-  .mfield textarea,.mfield select{
-    width:100%; max-width:100%; min-width:0; border:1px solid #e5e5ea; border-radius:16px; padding:14px 16px;
-    font-size:16px; font-family:inherit; outline:none; background:#f9f9fb; color:#333;
-    transition:border-color .2s, background-color .2s; -webkit-appearance:none; appearance:none;
+  /* 核心强迫症修复：全部 input / select 绝对占满，高度完全一致 */
+  .mfield input, .mfield select {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #e5e5ea;
+    border-radius: 16px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: #f9f9fb;
+    color: #333;
+    transition: border-color .2s, background-color .2s;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
   }
-  .mfield textarea{resize:vertical;line-height:1.5;word-break:break-all}
-  .mfield input:focus,.mfield textarea:focus,.mfield select:focus{
-    border-color:#ff6bb5; background:#fff;
+
+  .mfield textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid #e5e5ea;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    background: #f9f9fb;
+    color: #333;
+    transition: border-color .2s, background-color .2s;
+    box-sizing: border-box;
+    resize: vertical;
+    line-height: 1.5;
+    word-break: break-all;
   }
+
+  .mfield input:focus, .mfield textarea:focus, .mfield select:focus {
+    border-color: #ff6bb5;
+    background: #fff;
+  }
+  
   .mfield input::placeholder,.mfield textarea::placeholder{color:#b0b0b5}
+  
+  /* 下拉框自定义小箭头 */
   .mfield select{
     background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 16px center; background-size:14px; padding-right:40px;
   }
-  .mfield select option {font-size:16px; padding:10px;}
 
   .seg{display:flex;gap:6px;width:100%}
   .seg button{flex:1;height:38px;border-radius:12px;border:1px solid #e5e5ea;background:#f9f9fb;
@@ -383,15 +415,15 @@
           <div class="api-section-title">主 API <span class="sub">用于线上/线下聊天</span></div>
           <div class="card">
             <div class="mfield"><label>Base URL</label>
-              <input id="mainBaseURL" placeholder="https://api.deepseek.com/v1"></div>
+              <input type="text" id="mainBaseURL" placeholder="https://api.deepseek.com/v1"></div>
             <div class="mfield"><label>API Key</label>
-              <input id="mainApiKey" type="password" placeholder="sk-..."></div>
+              <input type="password" id="mainApiKey" placeholder="sk-..."></div>
             <div class="mfield">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                 <label style="margin:0">模型名称</label>
                 <button class="fetch-btn" data-type="main">获取模型 ↻</button>
               </div>
-              <input id="mainModel" placeholder="如 deepseek-chat">
+              <input type="text" id="mainModel" placeholder="如 deepseek-chat">
             </div>
             <div class="mfield">
               <label>温度 (temperature) <span class="temp-val" id="mainTempVal">0.9</span></label>
@@ -403,15 +435,15 @@
           <div class="api-section-title">副 API <span class="sub">用于记忆生成等额外项目</span></div>
           <div class="card">
             <div class="mfield"><label>Base URL</label>
-              <input id="subBaseURL" placeholder="https://api.deepseek.com/v1"></div>
+              <input type="text" id="subBaseURL" placeholder="https://api.deepseek.com/v1"></div>
             <div class="mfield"><label>API Key</label>
-              <input id="subApiKey" type="password" placeholder="sk-..."></div>
+              <input type="password" id="subApiKey" placeholder="sk-..."></div>
             <div class="mfield">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                 <label style="margin:0">模型名称</label>
                 <button class="fetch-btn" data-type="sub">获取模型 ↻</button>
               </div>
-              <input id="subModel" placeholder="如 deepseek-chat">
+              <input type="text" id="subModel" placeholder="如 deepseek-chat">
             </div>
             <div class="mfield">
               <label>温度 (temperature) <span class="temp-val" id="subTempVal">0.7</span></label>
@@ -428,9 +460,9 @@
           <div class="api-section-title">MiniMax 语音 <span class="sub">外接 T2A 语音合成</span></div>
           <div class="card">
             <div class="mfield"><label>API Key</label>
-              <input id="voiceApiKey" type="password" placeholder="MiniMax API Key"></div>
+              <input type="password" id="voiceApiKey" placeholder="MiniMax API Key"></div>
             <div class="mfield"><label>Group ID</label>
-              <input id="voiceGroupId" placeholder="MiniMax 的 GroupId"></div>
+              <input type="text" id="voiceGroupId" placeholder="MiniMax 的 GroupId"></div>
             <div class="mfield"><label>模型</label>
               <select id="voiceModel">
                 <option value="speech-02-hd">speech-02-hd（高清）</option>
@@ -440,16 +472,16 @@
               </select>
             </div>
             <div class="mfield"><label>音色 Voice ID</label>
-              <input id="voiceVoiceId" placeholder="如 female-shaonv"></div>
+              <input type="text" id="voiceVoiceId" placeholder="如 female-shaonv"></div>
             <div class="mfield"><label>语速 speed（0.5 ~ 2）</label>
-              <input id="voiceSpeed" type="number" min="0.5" max="2" step="0.1" value="1.0"></div>
+              <input type="number" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1.0"></div>
             <div class="mfield"><label>音量 volume（0 ~ 10）</label>
-              <input id="voiceVolume" type="number" min="0" max="10" step="0.5" value="1.0"></div>
+              <input type="number" id="voiceVolume" min="0" max="10" step="0.5" value="1.0"></div>
           </div>
           <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
           <div class="card">
             <div class="mfield"><label>测试文本</label>
-              <input id="ttsTestText" placeholder="你好，我是林小满。"></div>
+              <input type="text" id="ttsTestText" placeholder="你好，我是林小满。"></div>
             <button class="btn secondary" id="ttsTestBtn" style="margin:4px 0 14px">生成并播放</button>
           </div>
           <div class="hint">返回的是 hex 编码音频，程序会自动转成 blob 播放。</div>
@@ -460,9 +492,9 @@
           <div class="api-section-title">GPT 生图 <span class="sub">外接 OpenAI Images</span></div>
           <div class="card">
             <div class="mfield"><label>Base URL</label>
-              <input id="imgBaseURL" placeholder="https://api.openai.com/v1"></div>
+              <input type="text" id="imgBaseURL" placeholder="https://api.openai.com/v1"></div>
             <div class="mfield"><label>API Key</label>
-              <input id="imgApiKey" type="password" placeholder="sk-..."></div>
+              <input type="password" id="imgApiKey" placeholder="sk-..."></div>
             <div class="mfield">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                 <label style="margin:0">模型</label>
@@ -495,7 +527,7 @@
           <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
           <div class="card">
             <div class="mfield"><label>测试 Prompt</label>
-              <input id="imgTestPrompt" placeholder="一只在粉紫色夜空下散步的猫"></div>
+              <input type="text" id="imgTestPrompt" placeholder="一只在粉紫色夜空下散步的猫"></div>
             <button class="btn secondary" id="imgTestBtn" style="margin:4px 0 14px">生成并显示</button>
             <div id="imgTestResult" style="padding-bottom:14px"></div>
           </div>
@@ -532,7 +564,7 @@
       <div class="scroll-body" style="padding-bottom:30px">
         <div class="card" style="margin:14px 12px">
           <div class="mfield"><label>记忆条数（保留最近多少条消息）</label>
-            <input id="setMemory" type="number" min="2" max="200"></div>
+            <input type="number" id="setMemory" min="2" max="200"></div>
         </div>
         <div class="hint">按消息条数裁剪，不要求严格一问一答。20 条 ≈ 10 轮对话。<br>条数越少越省 token，越多越记得住。</div>
         <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveMemoryBtn">保存</button>
@@ -1080,8 +1112,8 @@ function closeModal(){ $('modalMask').classList.remove('show'); }
 function editContact(id){
   const c=id?getChar(id):null; const e=c||{name:'',avatar:'🙂',persona:'',greeting:''};
   showModal(c?'编辑联系人':'创建联系人',`
-    <div class="mfield"><label>名字</label><input id="cName" value="${esc(e.name)}" placeholder="角色名"></div>
-    <div class="mfield"><label>头像 Emoji</label><input id="cAvatar" maxlength="6" value="${esc(e.avatar)}"></div>
+    <div class="mfield"><label>名字</label><input type="text" id="cName" value="${esc(e.name)}" placeholder="角色名"></div>
+    <div class="mfield"><label>头像 Emoji</label><input type="text" id="cAvatar" maxlength="6" value="${esc(e.avatar)}"></div>
     <div class="mfield"><label>人设描述</label><textarea id="cPersona" rows="5">${esc(e.persona)}</textarea></div>
     <div class="mfield"><label>开场白（可选）</label><textarea id="cGreeting" rows="2">${esc(e.greeting)}</textarea></div>
     <button class="btn" id="cSave">保存</button>
@@ -1104,7 +1136,7 @@ function createGroup(){
   const contacts=data.characters.filter(c=>!c.isGroup);
   if(contacts.length<2){ toast('至少需要 2 个联系人才能建群'); return; }
   showModal('创建群聊',`
-    <div class="mfield"><label>群名称</label><input id="gName" placeholder="例如：深夜群"></div>
+    <div class="mfield"><label>群名称</label><input type="text" id="gName" placeholder="例如：深夜群"></div>
     <div class="mfield"><label>选择成员</label><div class="check-list" id="gMembers">${contacts.map(c=>`<label class="check-item"><input type="checkbox" value="${c.id}"><span>${esc(c.avatar)} ${esc(c.name)}</span></label>`).join('')}</div></div>
     <button class="btn" id="gSave">创建并加入聊天</button>
   `,(root)=>{
@@ -1119,14 +1151,14 @@ function createGroup(){
   });
 }
 function editWallet(){
-  showModal('钱包',`<div class="mfield"><label>余额（元）</label><input id="wBal" type="number" step="0.01" value="${data.wallet.balance||0}"></div><button class="btn" id="wSave">保存</button>`,(root)=>{
+  showModal('钱包',`<div class="mfield"><label>余额（元）</label><input type="number" id="wBal" step="0.01" value="${data.wallet.balance||0}"></div><button class="btn" id="wSave">保存</button>`,(root)=>{
     root.querySelector('#wSave').onclick=()=>{ data.wallet.balance=parseFloat(root.querySelector('#wBal').value)||0; saveData(); renderMeTab(); closeModal(); };
   });
 }
 function editPersona(){
   showModal('我的人设',`
-    <div class="mfield"><label>昵称</label><input id="pName" value="${esc(data.user.name)}"></div>
-    <div class="mfield"><label>头像 Emoji</label><input id="pAvatar" maxlength="6" value="${esc(data.user.avatar)}"></div>
+    <div class="mfield"><label>昵称</label><input type="text" id="pName" value="${esc(data.user.name)}"></div>
+    <div class="mfield"><label>头像 Emoji</label><input type="text" id="pAvatar" maxlength="6" value="${esc(data.user.avatar)}"></div>
     <div class="mfield"><label>我的设定</label><textarea id="pPersona" rows="5">${esc(data.settings.userPersona)}</textarea></div>
     <button class="btn" id="pSave">保存</button>
   `,(root)=>{
@@ -1135,7 +1167,7 @@ function editPersona(){
 }
 function momentMenu(){ showModal('朋友圈',`<button class="btn" id="mUserPost">发朋友圈</button><button class="btn secondary" id="mCharPost" style="margin-top:10px">指定角色发朋友圈</button>`,(root)=>{ root.querySelector('#mUserPost').onclick=()=>{ closeModal(); userPostMoment(); }; root.querySelector('#mCharPost').onclick=()=>{ closeModal(); charPostMoment(); }; }); }
 function userPostMoment(){ showModal('发朋友圈',`<div class="mfield"><label>说点什么…</label><textarea id="mText" rows="5"></textarea></div><button class="btn" id="mPost">发布</button>`,(root)=>{ root.querySelector('#mPost').onclick=()=>{ const text=root.querySelector('#mText').value.trim(); if(!text){ toast('写点什么吧'); return; } data.moments.push({id:uid('m'),authorId:'user',authorName:data.user.name,authorAvatar:data.user.avatar,content:text,ts:Date.now()}); saveData(); closeModal(); renderMomentsTab(); toast('已发布'); }; }); }
-function charPostMoment(){ const chars=data.characters.filter(c=>!c.isGroup); if(!chars.length){ toast('先创建联系人'); return; } showModal('指定角色发朋友圈',`<div class="mfield"><label>选择角色</label><select id="mChar">${chars.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div class="mfield"><label>发几条（1～10）</label><input id="mCount" type="number" min="1" max="10" value="1"></div><button class="btn" id="mGen">生成</button>`,(root)=>{ root.querySelector('#mGen').onclick=()=>{ const cid=root.querySelector('#mChar').value; let n=parseInt(root.querySelector('#mCount').value,10)||1; n=Math.max(1,Math.min(10,n)); closeModal(); generateMoments(cid,n); }; }); }
+function charPostMoment(){ const chars=data.characters.filter(c=>!c.isGroup); if(!chars.length){ toast('先创建联系人'); return; } showModal('指定角色发朋友圈',`<div class="mfield"><label>选择角色</label><select id="mChar">${chars.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div><div class="mfield"><label>发几条（1～10）</label><input type="number" id="mCount" min="1" max="10" value="1"></div><button class="btn" id="mGen">生成</button>`,(root)=>{ root.querySelector('#mGen').onclick=()=>{ const cid=root.querySelector('#mChar').value; let n=parseInt(root.querySelector('#mCount').value,10)||1; n=Math.max(1,Math.min(10,n)); closeModal(); generateMoments(cid,n); }; }); }
 async function generateMoments(charId, count){
   const c=getChar(charId); if(!c) return; if(!data.settings.subApi.apiKey){ toast('请先到「API设置」填写副 API Key'); return; }
   toast('正在生成 '+count+' 条朋友圈…', 30000);
@@ -1159,10 +1191,10 @@ function posLabel(p){ return {before:'前',middle:'中',after:'后',depth:'深�
 function editWorldbook(id){
   const entry=id?data.worldbook.find(x=>x.id===id):null; const e=entry||{name:'',content:'',position:'before',depth:0,sender:'user'};
   showModal(entry?'编辑条目':'新建条目',`
-    <div class="mfield"><label>条目名称</label><input id="wbName" value="${esc(e.name)}"></div>
+    <div class="mfield"><label>条目名称</label><input type="text" id="wbName" value="${esc(e.name)}"></div>
     <div class="mfield"><label>条目内容</label><textarea id="wbContent" rows="6">${esc(e.content)}</textarea></div>
     <div class="mfield"><label>插入位置</label><div class="seg" id="wbPos"><button data-v="before">前</button><button data-v="middle">中</button><button data-v="after">后</button><button data-v="depth">深度</button></div></div>
-    <div id="wbDepthBox"><div class="mfield"><label>深度（0 = 最末端）</label><input id="wbDepth" type="number" min="0" value="${e.depth||0}"></div><div class="mfield"><label>发送者</label><div class="seg" id="wbSender"><button data-v="user">用户</button><button data-v="system">系统</button></div></div></div>
+    <div id="wbDepthBox"><div class="mfield"><label>深度（0 = 最末端）</label><input type="number" id="wbDepth" min="0" value="${e.depth||0}"></div><div class="mfield"><label>发送者</label><div class="seg" id="wbSender"><button data-v="user">用户</button><button data-v="system">系统</button></div></div></div>
     <button class="btn" id="wbSave">保存</button>${entry?'<button class="btn danger" id="wbDel" style="margin-top:10px">删除</button>':''}
   `,(root)=>{
     let pos=e.position, sender=e.sender||'user';
