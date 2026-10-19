@@ -1,3 +1,9 @@
+出现第二张图“瘦了吧唧”的原因是：生图返回的图片尺寸较大（比如 1024×1792），或者输入了长 URL，把原本的屏幕宽度撑破了，导致了水平溢出。 手机浏览器（Safari）检测到内容超宽，为了防止排版错乱，自动缩小（Zoom out）了整个页面，看起来就像缩小了一圈。
+
+我已经修复了这个问题。通过全局限制 max-width: 100% 和防横向溢出，现在页面会死死卡住手机屏幕的宽度，无论图片多大、URL 多长，都不会再把页面挤扁。
+
+这是修复后的完整代码：
+
 ```html
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -6,16 +12,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <title>憨机炮</title>
 <style>
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;margin:0}
+  /* 核心修复：防止任何元素撑破屏幕导致浏览器缩放 */
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent; max-width: 100%;}
+  html,body{height:100%;margin:0;width:100%;overflow-x:hidden;}
   body{display:flex;align-items:center;justify-content:center;background:#0a0a0f;
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;overflow:hidden}
+  
+  /* 限制手机外壳在电脑上预览的宽度，在手机上则是全屏 */
   .phone{width:390px;height:844px;background:#000;border-radius:48px;padding:10px;position:relative;
-    box-shadow:0 0 0 2px #2a2a30,0 40px 80px rgba(0,0,0,.8)}
+    box-shadow:0 0 0 2px #2a2a30,0 40px 80px rgba(0,0,0,.8); overflow:hidden}
   .screen{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#f2f2f7}
+  
   @media (max-width:430px),(max-height:880px){
-    .phone{width:100vw;height:100dvh;border-radius:0;padding:0;box-shadow:none}
-    .screen{border-radius:0}
+    .phone{width:100vw;max-width:100vw;height:100dvh;border-radius:0;padding:0;box-shadow:none;}
+    .screen{border-radius:0;width:100vw;height:100dvh;}
   }
   ::-webkit-scrollbar{width:0;height:0}
 
@@ -34,9 +44,9 @@
     background:currentColor;border-radius:0 2px 2px 0}
   .sb-battery b{display:block;height:100%;width:72%;background:currentColor;border-radius:1px}
 
-  /* 视图基础 */
+  /* 视图 */
   .view{position:absolute;inset:0;display:flex;flex-direction:column;background:#f2f2f7;
-    opacity:0;pointer-events:none;transition:opacity .18s;z-index:1}
+    opacity:0;pointer-events:none;transition:opacity .18s;z-index:1;width:100%;overflow:hidden}
   .view.active{opacity:1;pointer-events:auto;z-index:2}
 
   /* 桌面 */
@@ -61,11 +71,11 @@
     justify-content:center;padding:0 5px;border:2px solid #f7eaff}
 
   /* 导航 */
-  .nav{flex-shrink:0;padding-top:48px;height:104px;display:grid;grid-template-columns:56px 1fr 56px;
+  .nav{flex-shrink:0;padding-top:48px;height:104px;display:grid;grid-template-columns:56px minmax(0, 1fr) 56px;
     align-items:center;background:rgba(250,250,252,.94);backdrop-filter:blur(16px);
     -webkit-backdrop-filter:blur(16px);border-bottom:.5px solid rgba(0,0,0,.12);
-    position:relative;z-index:10}
-  .nav h1{font-size:17px;font-weight:600;margin:0;text-align:center}
+    position:relative;z-index:10;width:100%}
+  .nav h1{font-size:17px;font-weight:600;margin:0;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .nav-btn{width:56px;height:52px;border:none;background:none;font-size:24px;color:#ff6bb5;
     cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:400}
   .nav-btn:active{opacity:.45}
@@ -74,8 +84,8 @@
   #view-info{background:#fff}
   .tab-page{position:absolute;inset:0;display:none;flex-direction:column}
   .tab-page.active{display:flex}
-  .tab-body{flex:1;overflow-y:auto;padding-bottom:74px}
-  .scroll-body{flex:1;overflow-y:auto}
+  .tab-body{flex:1;overflow-y:auto;padding-bottom:74px;overflow-x:hidden}
+  .scroll-body{flex:1;overflow-y:auto;overflow-x:hidden}
 
   .tabbar{position:absolute;bottom:0;left:0;right:0;height:64px;padding-bottom:env(safe-area-inset-bottom);
     background:rgba(250,250,252,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -128,7 +138,7 @@
   .chat-title .avatar{width:30px;height:30px;font-size:16px;flex-shrink:0}
   .cname{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .messages{flex:1;overflow-y:auto;padding:16px 12px 8px;display:flex;flex-direction:column;
-    gap:12px;-webkit-overflow-scrolling:touch}
+    gap:12px;-webkit-overflow-scrolling:touch;overflow-x:hidden}
   .msg-row{display:flex;gap:8px;align-items:flex-end}
   .msg-row.me{flex-direction:row-reverse}
   .msg-row .avatar{width:32px;height:32px;font-size:17px}
@@ -149,7 +159,7 @@
   .input-bar{flex-shrink:0;display:flex;gap:6px;align-items:center;
     padding:10px 10px calc(12px + env(safe-area-inset-bottom));
     background:rgba(250,250,252,.96);backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);border-top:.5px solid rgba(0,0,0,.12)}
+    -webkit-backdrop-filter:blur(16px);border-top:.5px solid rgba(0,0,0,.12);width:100%}
   .input-bar input{flex:1;min-width:0;height:38px;border-radius:19px;border:1px solid #dcdce0;
     background:#fff;padding:0 14px;font-size:16px;outline:none;font-family:inherit}
   .input-bar input:focus{border-color:#ff6bb5}
@@ -160,21 +170,21 @@
   .input-bar button:disabled{opacity:.4}
   .input-bar button:active:not(:disabled){transform:scale(.95)}
 
-  /* 通用卡片与输入框（已按截图优化） */
+  /* 通用卡片与输入框 */
   .card{background:#fff;border-radius:16px;padding:4px 16px;
-    box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .hint{font-size:12px;color:#a5a5ad;line-height:1.7;padding:8px 20px 0}
+    box-shadow:0 1px 3px rgba(0,0,0,.04);margin:0 12px;width:calc(100% - 24px)}
+  .hint{font-size:12px;color:#a5a5ad;line-height:1.7;padding:8px 20px 0;word-break:break-all}
   
-  .mfield{margin:16px 0}
+  .mfield{margin:16px 0;width:100%}
   .mfield label{display:block;font-size:13px;color:#666;margin-bottom:8px;font-weight:500}
   
   .mfield input[type=text],.mfield input[type=password],.mfield input[type=number],
   .mfield textarea,.mfield select{
-    width:100%; border:1px solid #e5e5ea; border-radius:16px; padding:14px 16px;
+    width:100%; max-width:100%; min-width:0; border:1px solid #e5e5ea; border-radius:16px; padding:14px 16px;
     font-size:16px; font-family:inherit; outline:none; background:#f9f9fb; color:#333;
     transition:border-color .2s, background-color .2s; -webkit-appearance:none; appearance:none;
   }
-  .mfield textarea{resize:vertical;line-height:1.5}
+  .mfield textarea{resize:vertical;line-height:1.5;word-break:break-all}
   .mfield input:focus,.mfield textarea:focus,.mfield select:focus{
     border-color:#ff6bb5; background:#fff;
   }
@@ -185,7 +195,7 @@
   }
   .mfield select option {font-size:16px; padding:10px;}
 
-  .seg{display:flex;gap:6px}
+  .seg{display:flex;gap:6px;width:100%}
   .seg button{flex:1;height:38px;border-radius:12px;border:1px solid #e5e5ea;background:#f9f9fb;
     font-size:14px;font-family:inherit;cursor:pointer;color:#333;transition:all .2s}
   .seg button.active{background:#ff6bb5;border-color:#ff6bb5;color:#fff}
@@ -197,39 +207,45 @@
   .btn.secondary{background:#f2f2f7;color:#333}
   .btn.danger{background:#ff3b30}
   
-  .check-list{display:flex;flex-direction:column;gap:8px}
+  .check-list{display:flex;flex-direction:column;gap:8px;width:100%}
   .check-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;
-    background:#f9f9fb;border:1px solid #e5e5ea;font-size:15px}
-  .check-item input{width:18px;height:18px;accent-color:#ff6bb5}
+    background:#f9f9fb;border:1px solid #e5e5ea;font-size:15px;width:100%}
+  .check-item input{width:18px;height:18px;accent-color:#ff6bb5;flex-shrink:0}
+  .check-item span{word-break:break-all;flex:1;min-width:0}
 
   .wb-item{background:#fff;margin:10px 12px;padding:14px 16px;border-radius:12px;
-    cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05);width:calc(100% - 24px)}
   .wb-item:active{background:#fafafc}
-  .wb-title{font-size:15px;font-weight:600;color:#111}
+  .wb-title{font-size:15px;font-weight:600;color:#111;word-break:break-all}
   .wb-meta{font-size:11px;color:#ff6bb5;margin-top:4px}
-  .wb-content{font-size:13px;color:#8e8e93;margin-top:6px;line-height:1.5}
+  .wb-content{font-size:13px;color:#8e8e93;margin-top:6px;line-height:1.5;word-break:break-all}
 
   /* API设置 */
-  .api-tabs{flex-shrink:0;display:flex;gap:6px;padding:10px 12px;background:#f2f2f7}
+  .api-tabs{flex-shrink:0;display:flex;gap:6px;padding:10px 12px;background:#f2f2f7;width:100%}
   .api-tab{flex:1;height:40px;border-radius:12px;border:none;background:#fff;
     font-size:14px;font-weight:600;color:#666;cursor:pointer;font-family:inherit;
     box-shadow:0 1px 3px rgba(0,0,0,.04);transition:all .15s}
   .api-tab.active{background:#ff6bb5;color:#fff;box-shadow:0 2px 6px rgba(255,107,181,.4)}
-  .api-panel{display:none;padding-bottom:30px}
+  .api-panel{display:none;padding-bottom:30px;width:100%}
   .api-panel.active{display:block}
   .api-section-title{font-size:13px;font-weight:600;color:#4a2a5a;padding:16px 16px 6px}
   .api-section-title .sub{font-size:11px;color:#a5a5ad;font-weight:400;margin-left:6px}
 
   .temp-slider{width:100%;accent-color:#ff6bb5;height:24px;margin-top:2px}
   .temp-val{color:#ff6bb5;font-weight:700;font-size:13px;margin-left:4px}
-  .emtemp></-hint{font-size:11px;color:#diva5a5ad;margin>
-       -top:2px;display:flex;justify-content:space-between}
+  .temp-hint{font-size:11px;color:#a5a5ad;margin-top:2px;display:flex;justify-content:space-between}
   .temp-hint span{flex:1;text-align:center}
 
   .fetch-btn{border:none;background:none;color:#ff6bb5;font-size:13px;font-weight:500;
     cursor:pointer;padding:4px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:4px}
   .fetch-btn:active{background:#ffe6f2}
   .fetch-btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* 图片测试自适应 */
+  #imgTestResult img {
+    width: 100% !important; max-width: 100% !important; height: auto !important;
+    border-radius: 12px; display: block; object-fit: contain;
+  }
 
   /* 系统页 */
   .sys-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0}
@@ -253,7 +269,7 @@
   /* 模态框 & Toast */
   .modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.42);display:flex;
     align-items:flex-end;justify-content:center;z-index:300;opacity:0;pointer-events:none;
-    transition:opacity .2s}
+    transition:opacity .2s;overflow:hidden}
   .modal-mask.show{opacity:1;pointer-events:auto}
   .modal{width:100%;max-height:84%;background:#fff;border-radius:20px 20px 0 0;
     display:flex;flex-direction:column;transform:translateY(100%);
@@ -264,12 +280,12 @@
   .modal-title{font-size:16px;font-weight:600}
   .modal-close{border:none;background:none;font-size:18px;color:#8e8e93;cursor:pointer;
     padding:4px 8px}
-  .modal-body{padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;flex:1}
+  .modal-body{padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;flex:1;overflow-x:hidden}
 
   .toast{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
     background:rgba(0,0,0,.8);color:#fff;padding:11px 22px;border-radius:12px;font-size:14px;
     z-index:400;pointer-events:none;animation:toastIn .18s ease;max-width:78%;text-align:center;
-    line-height:1.5}
+    line-height:1.5;word-break:break-all}
   @keyframes toastIn{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
 </style>
 </head>
@@ -332,7 +348,8 @@
       <div class="tabbar">
         <div class="tab active" data-tab="chats"><span>💬</span><em>聊天</em></div>
         <div class="tab" data-tab="contacts"><span>👥</span><em>联系人</em></div>
-        <div class="tab" data-tab="moments"><span>🌤</span><em>朋友圈</ <div class="tab" data-tab="me"><span>👤</span><em>我</em></div>
+        <div class="tab" data-tab="moments"><span>🌤</span><em>朋友圈</em></div>
+        <div class="tab" data-tab="me"><span>👤</span><em>我</em></div>
       </div>
     </div>
 
@@ -371,7 +388,7 @@
         <!-- API 板块 -->
         <div class="api-panel active" data-api-panel="api">
           <div class="api-section-title">主 API <span class="sub">用于线上/线下聊天</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>Base URL</label>
               <input id="mainBaseURL" placeholder="https://api.deepseek.com/v1"></div>
             <div class="mfield"><label>API Key</label>
@@ -391,7 +408,7 @@
           </div>
 
           <div class="api-section-title">副 API <span class="sub">用于记忆生成等额外项目</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>Base URL</label>
               <input id="subBaseURL" placeholder="https://api.deepseek.com/v1"></div>
             <div class="mfield"><label>API Key</label>
@@ -416,7 +433,7 @@
         <!-- 语音设置板块 -->
         <div class="api-panel" data-api-panel="voice">
           <div class="api-section-title">MiniMax 语音 <span class="sub">外接 T2A 语音合成</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>API Key</label>
               <input id="voiceApiKey" type="password" placeholder="MiniMax API Key"></div>
             <div class="mfield"><label>Group ID</label>
@@ -437,7 +454,7 @@
               <input id="voiceVolume" type="number" min="0" max="10" step="0.5" value="1.0"></div>
           </div>
           <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>测试文本</label>
               <input id="ttsTestText" placeholder="你好，我是林小满。"></div>
             <button class="btn secondary" id="ttsTestBtn" style="margin:4px 0 14px">生成并播放</button>
@@ -448,7 +465,7 @@
         <!-- 生图设置板块 -->
         <div class="api-panel" data-api-panel="image">
           <div class="api-section-title">GPT 生图 <span class="sub">外接 OpenAI Images</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>Base URL</label>
               <input id="imgBaseURL" placeholder="https://api.openai.com/v1"></div>
             <div class="mfield"><label>API Key</label>
@@ -483,7 +500,7 @@
             </div>
           </div>
           <div class="api-section-title">测试 <span class="sub">验证跨域与配置</span></div>
-          <div class="card" style="margin:0 12px">
+          <div class="card">
             <div class="mfield"><label>测试 Prompt</label>
               <input id="imgTestPrompt" placeholder="一只在粉紫色夜空下散步的猫"></div>
             <button class="btn secondary" id="imgTestBtn" style="margin:4px 0 14px">生成并显示</button>
@@ -493,7 +510,7 @@
 
       </div>
       <div style="flex-shrink:0;padding:10px 12px calc(14px + env(safe-area-inset-bottom));
-        background:rgba(250,250,252,.96);border-top:.5px solid rgba(0,0,0,.1)">
+        background:rgba(250,250,252,.96);border-top:.5px solid rgba(0,0,0,.1);width:100%">
         <button class="btn" id="saveApiBtn" style="margin:0">保存全部设置</button>
       </div>
     </div>
@@ -552,7 +569,7 @@
         <button class="btn danger" id="clearAllBtn" style="margin-top:10px">清空全部数据</button>
         <textarea id="importArea" placeholder="粘贴备份 JSON 到这里，再点「导入数据」"
           style="width:100%;height:130px;margin-top:14px;border:1px solid #e5e5ea;border-radius:16px;
-          padding:14px;font-size:14px;font-family:inherit;outline:none;resize:vertical;background:#f9f9fb"></textarea>
+          padding:14px;font-size:14px;font-family:inherit;outline:none;resize:vertical;background:#f9f9fb;word-break:break-all"></textarea>
       </div>
     </div>
 
