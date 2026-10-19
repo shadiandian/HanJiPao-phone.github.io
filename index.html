@@ -279,6 +279,13 @@
     z-index:400;pointer-events:none;animation:toastIn .18s ease;max-width:78%;text-align:center;
     line-height:1.5;word-break:break-all}
   @keyframes toastIn{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
+  
+  /* 结构化记忆卡片样式 */
+  .mem-card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid #f0f0f5; box-shadow: 0 2px 6px rgba(0,0,0,.02); }
+  .mem-header { display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 10px; }
+  .mem-tag { font-size: 11px; background: #ffebf3; color: #ff6bb5; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
+  .mem-item { margin-bottom: 8px; font-size: 13px; color: #333; line-height: 1.4; }
+  .mem-item b { color: #666; }
 </style>
 </head>
 <body>
@@ -522,12 +529,12 @@
         </div>
         <div class="hint">按消息条数裁剪，不要求严格一问一答。20 条 ≈ 10 轮对话。<br>条数越少越省 token，越多越记得住。</div>
         
-        <div class="api-section-title">长期记忆胶囊</div>
-        <div class="card">
+        <div class="api-section-title">长期记忆系统 (v3)</div>
+        <div class="card" style="padding-bottom:16px">
            <div class="mfield"><label>当前角色</label>
              <select id="memoryCharSelect"></select></div>
-           <button class="btn secondary" id="summarizeBtn">压缩当前角色聊天为记忆</button>
-           <div id="memoryList" style="margin-top:14px; padding-bottom:14px;"></div>
+           <button class="btn secondary" id="summarizeBtn">压缩当前聊天为结构化记忆</button>
+           <div id="memoryList" style="margin-top:14px;"></div>
         </div>
         
         <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveMemoryBtn">保存设置</button>
@@ -599,10 +606,10 @@
 
 <script>
 /* ==========================================================
-   憨机炮 —— 单文件 AI 小手机 v4
+   憨机炮 —— 单文件 AI 小手机 v5 (结构化记忆版)
    ========================================================== */
 const LS_KEY = 'hanjipao_v1';
-const DATA_VERSION = 3; // 版本升级：支持记忆胶囊
+const DATA_VERSION = 4; // 升级到结构记忆
 
 const HOME_APPS = [
   { id:'info',      name:'信息',     icon:'💬', bg:'linear-gradient(180deg,#7fe3a3,#2fbf6a)' },
@@ -677,7 +684,7 @@ function loadData(){
     if(!raw) return clone(DEFAULT_DATA);
     const p=JSON.parse(raw);
     const base=clone(DEFAULT_DATA);
-    return {
+    const result = {
       version: DATA_VERSION,
       settings: migrateSettings(p.settings),
       user: Object.assign(base.user, p.user||{}),
@@ -685,6 +692,18 @@ function loadData(){
       chats: p.chats||{}, moments: p.moments||[], worldbook: p.worldbook||[],
       memories: p.memories||{}, wallet: Object.assign(base.wallet, p.wallet||{})
     };
+    // 兼容旧版纯文本记忆：转为结构化对象
+    for (const cid in result.memories) {
+      if (Array.isArray(result.memories[cid])) {
+        result.memories[cid] = result.memories[cid].map(m => {
+          if (typeof m === 'string') {
+            return { ts: Date.now(), facts: [m], prefs: [], milestones: [], unresolved: [], userProfile: '' };
+          }
+          return m;
+        });
+      }
+    }
+    return result;
   }catch(e){ return clone(DEFAULT_DATA); }
 }
 function saveData(){
@@ -830,7 +849,6 @@ function renderMessages(){
   
   box.innerHTML=msgs.map((m, idx)=>{
     const isMe = m.role==='user';
-    // 判断是否包含图片
     const imgRegex = /\[图片[:：]\s*(.+?)\]/;
     const match = m.content.match(imgRegex);
     let contentHtml = '';
@@ -839,7 +857,6 @@ function renderMessages(){
       contentHtml = `<img class="bubble-img" src="${esc(m.imageUrl)}">`;
       if (match) contentHtml += `<div style="margin-top:6px">${esc(m.content.replace(match[0],''))}</div>`;
     } else if (match) {
-      // 有图片标记，但还没生成好
       contentHtml = `<div style="color:#999; font-size:12px;">[正在生成图片...]</div>`;
     } else {
       contentHtml = esc(m.content);
@@ -864,7 +881,6 @@ function renderMessages(){
   
   box.scrollTop=box.scrollHeight;
   
-  // 异步补齐缺失的图片
   msgs.forEach((m, idx) => {
     if (!m.imageUrl) {
       const match = m.content.match(/\[图片[:：]\s*(.+?)\]/);
@@ -873,14 +889,13 @@ function renderMessages(){
         callImage(prompt).then(url => {
           m.imageUrl = url;
           saveData();
-          if(currentCharId === currentCharId) renderMessages(); // 刷新
+          if(currentCharId === currentCharId) renderMessages();
         }).catch(e => console.error(e));
       }
     }
   });
 }
 
-/* 播放语音逻辑 */
 let currentAudio = null;
 async function playVoice(idx, btn) {
   const msg = data.chats[currentCharId][idx];
@@ -896,7 +911,6 @@ async function playVoice(idx, btn) {
   
   btn.classList.add('playing'); btn.textContent = '⏳ 生成中';
   try {
-    // 去除动作描写和图片标记
     const cleanText = msg.content.replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '').replace(/\[图片[:：][^\]]+\]/g, '').trim();
     if (!cleanText) throw new Error('没有可读的文字');
     
@@ -927,7 +941,6 @@ function sendMessage(){
   input.value=''; saveData(); renderMessages(); updateRecvBtn();
 }
 
-// 发送图片
 async function sendImage(){
   if (busy || !currentCharId) return;
   const prompt = prompt('描述你想发送的图片画面：');
@@ -1001,9 +1014,9 @@ async function receiveMessage(){
 }
 
 /* ==========================================================
-   提示词与记忆构建
+   提示词构建与【记忆检索】
    ========================================================== */
-function buildSystemPrompt(c, wb, memories){
+function buildSystemPrompt(c, wb, matchedMems){
   const before=wb.filter(e=>e.position==='before').map(e=>e.content);
   const middle=wb.filter(e=>e.position==='middle').map(e=>e.content);
   const after =wb.filter(e=>e.position==='after').map(e=>e.content);
@@ -1016,8 +1029,17 @@ function buildSystemPrompt(c, wb, memories){
   parts.push(intro);
   parts.push(`【你的人设】\n${c.persona||'性格温和，善于倾听。'}`);
   
-  if (memories && memories.length > 0) {
-    parts.push(`【过往记忆】\n${memories.join('\n')}`);
+  // ============ 结构化记忆注入 ============
+  if (matchedMems && matchedMems.length > 0) {
+    let memText = '【记忆闪回】(请自然地将这些过往记忆融入对话，不要说“根据我的记忆”之类的AI腔调)\n';
+    matchedMems.forEach((mem, i) => {
+      if (mem.userProfile) memText += `· 你对用户的印象：${mem.userProfile}\n`;
+      if (mem.facts && mem.facts.length) memText += `· 相关事实：${mem.facts.join('；')}\n`;
+      if (mem.prefs && mem.prefs.length) memText += `· 用户偏好：${mem.prefs.join('；')}\n`;
+      if (mem.milestones && mem.milestones.length) memText += `· 情感进展：${mem.milestones.join('；')}\n`;
+      if (mem.unresolved && mem.unresolved.length) memText += `· 未解决的事：${mem.unresolved.join('；')}\n`;
+    });
+    parts.push(memText);
   }
   
   if(middle.length) parts.push(middle.join('\n'));
@@ -1034,13 +1056,53 @@ function buildSystemPrompt(c, wb, memories){
   return parts.join('\n\n');
 }
 
+// 简易记忆检索器
+function retrieveMemories(charId, userLastMsg) {
+  const mems = (data.memories || {})[charId] || [];
+  if (!mems.length) return [];
+
+  // 提取用户文本中的关键词：2个以上的中文字符 或 3个以上的英文字母
+  const keywords = userLastMsg.match(/[\u4e00-\u9fa5]{2,}|[a-zA-Z]{3,}/g) || [];
+  if (!keywords.length) {
+    // 如果没提取到词（比如就是“嗯”），返回最近的一条
+    return [mems[mems.length - 1]];
+  }
+
+  // 打分：命中关键词得分，时间越近略微加分
+  const scored = mems.map((m, index) => {
+    let score = 0;
+    const textToMatch = [
+      ...(m.facts||[]), ...(m.prefs||[]), ...(m.milestones||[]), ...(m.unresolved||[]), m.userProfile || ''
+    ].join('');
+    
+    keywords.forEach(kw => {
+      if (textToMatch.includes(kw)) score += 2; // 命中加2分
+    });
+    
+    // 距离越近，稍微加一点点分（0.1 ~ 1分），防止旧事完全被埋没
+    score += (index / mems.length) * 1.0; 
+    return { mem: m, score };
+  }).filter(x => x.score >= 2); // 必须至少命中一个词
+
+  scored.sort((a, b) => b.score - a.score);
+  
+  // 取前 2 条最相关的；如果一条都没命中，就取最近 1 条兜底
+  let result = scored.slice(0, 2).map(x => x.mem);
+  if (result.length === 0) result = [mems[mems.length - 1]];
+  
+  return result;
+}
+
 function buildMessages(c, history){
   const wb=(data.worldbook||[]).filter(e=>e.enabled!==false);
-  const mems = (data.memories || {})[c.id] || [];
-  const sys=buildSystemPrompt(c,wb,mems);
+  
+  // 获取用户最新的一句话做检索
+  const lastUserMsg = history.filter(m => m.role === 'user').pop()?.content || '';
+  const matchedMems = retrieveMemories(c.id, lastUserMsg);
+  
+  const sys=buildSystemPrompt(c,wb,matchedMems);
   const out=[{role:'system',content:sys}];
   
-  // 处理历史消息，如果有图片，转成文字描述发给 API
   const hist=history.map(m=>{
     let text = m.content;
     if (m.imageUrl) text = `[发送了一张图片] ${text}`;
@@ -1165,16 +1227,13 @@ async function fetchModels(baseURL, apiKey) {
 }
 
 /* ==========================================================
-   记忆生成
+   记忆生成 (结构化)
    ========================================================== */
 function openMemorySettings(){
   $('setMemory').value = data.settings.memoryTurns || 20;
   
-  // 渲染角色下拉框
   const chars = data.characters.filter(c=>c.added);
   $('memoryCharSelect').innerHTML = chars.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
-  
-  // 渲染当前角色的记忆
   renderMemoryList(chars[0]?.id);
   
   $('memoryCharSelect').onchange = (e) => renderMemoryList(e.target.value);
@@ -1185,11 +1244,37 @@ function renderMemoryList(charId) {
   if (!charId) { $('memoryList').innerHTML = '<div class="empty-tip">没有角色</div>'; return; }
   const mems = (data.memories || {})[charId] || [];
   if (mems.length === 0) {
-    $('memoryList').innerHTML = '<div class="empty-tip" style="padding:10px;font-size:12px">暂无记忆胶囊</div>';
+    $('memoryList').innerHTML = '<div class="empty-tip" style="padding:10px;font-size:12px">暂无结构化记忆</div>';
     return;
   }
-  $('memoryList').innerHTML = mems.map(m => `<div style="padding:10px 0;border-bottom:1px solid #eee;font-size:13px;color:#555">${esc(m)}</div>`).join('');
+  
+  $('memoryList').innerHTML = mems.map((m, idx) => {
+    // 兼容旧数据
+    if (typeof m === 'string') return `<div class="mem-card"><div class="mem-item">${esc(m)}</div></div>`;
+    
+    const html = `
+      <div class="mem-card">
+        <div class="mem-header">
+          <span>记忆片段 #${idx + 1}</span>
+          <span onclick="delMemory('${charId}', ${idx})" style="cursor:pointer;color:#ff3b30;padding:0 4px;">删除</span>
+        </div>
+        ${m.userProfile ? `<div class="mem-item"><span class="mem-tag">专属画像</span><br>${esc(m.userProfile)}</div>` : ''}
+        ${m.facts && m.facts.length ? `<div class="mem-item"><span class="mem-tag">核心事实</span><br>${m.facts.map(esc).join('<br>')}</div>` : ''}
+        ${m.prefs && m.prefs.length ? `<div class="mem-item"><span class="mem-tag">偏好习惯</span><br>${m.prefs.map(esc).join('<br>')}</div>` : ''}
+        ${m.milestones && m.milestones.length ? `<div class="mem-item"><span class="mem-tag">情感里程碑</span><br>${m.milestones.map(esc).join('<br>')}</div>` : ''}
+        ${m.unresolved && m.unresolved.length ? `<div class="mem-item"><span class="mem-tag">未解决</span><br>${m.unresolved.map(esc).join('<br>')}</div>` : ''}
+      </div>
+    `;
+    return html;
+  }).join('');
 }
+
+window.delMemory = function(charId, idx) {
+  if(!confirm('删除这段记忆？')) return;
+  data.memories[charId].splice(idx, 1);
+  saveData();
+  renderMemoryList(charId);
+};
 
 async function summarizeChat(){
   const cid = $('memoryCharSelect').value;
@@ -1199,25 +1284,62 @@ async function summarizeChat(){
   if (!data.settings.subApi.apiKey) { toast('请先在 API 设置中填写副 API Key'); return; }
   
   const btn = $('summarizeBtn');
-  btn.disabled = true; btn.textContent = '正在总结…';
+  btn.disabled = true; btn.textContent = '正在提取结构化记忆…';
   try {
     const textHistory = chat.map(m => `${m.role==='user'?'用户':'角色'}: ${m.content.replace(/\[图片[:：][^\]]+\]/g, '[图片]')}`).join('\n');
-    const prompt = `请阅读以下聊天记录，提取出最重要的事实、设定、情感进展。用一段话（不超过 200 字）总结成“长期记忆”，方便日后回忆。\n\n记录：\n${textHistory}`;
+    const prompt = `请阅读以下聊天记录，提取出重要信息。
+严格按照 JSON 格式输出，不要包含 Markdown 标记，结构如下：
+{
+  "facts": ["关于角色或两人关系的关键事实，简短明确"],
+  "prefs": ["用户展现出的喜好、习惯或雷区"],
+  "milestones": ["两人情感或关系的重大进展，如表白、吵架和好等"],
+  "unresolved": ["尚未解决的话题、承诺或约定"],
+  "userProfile": "用一句话概括经过这段对话后，角色眼中的用户形象（例如：一个经常熬夜、喜欢猫但有点社恐的程序员）"
+}
+如果某一项没有内容，请用空数组 [] 或者空字符串 ""。
+
+聊天记录：
+${textHistory}`;
     
-    const msg = [{role:'system',content:'你是一个精准的总结助手。'}, {role:'user',content:prompt}];
-    const summary = await callChat(msg, null, 'sub');
+    const msg = [{role:'system',content:'你是一个严格输出 JSON 的数据提取助手。'}, {role:'user',content:prompt}];
+    const raw = await callChat(msg, null, 'sub');
     
+    // 解析 JSON
+    let memObj = null;
+    try {
+      // 尝试截取大括号内容
+      let s = raw.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+      const a = s.indexOf('{'), b = s.lastIndexOf('}');
+      if (a >= 0 && b > a) {
+        memObj = JSON.parse(s.slice(a, b + 1));
+      } else {
+        memObj = JSON.parse(s);
+      }
+    } catch (e) {
+      console.error("JSON解析失败", raw);
+      throw new Error('副API返回的不是有效 JSON，请重试或调低温度。');
+    }
+
     if (!data.memories) data.memories = {};
     if (!data.memories[cid]) data.memories[cid] = [];
-    data.memories[cid].push(summary.trim());
-    saveData();
     
+    // 补全字段并存入
+    data.memories[cid].push({
+      ts: Date.now(),
+      facts: memObj.facts || [],
+      prefs: memObj.prefs || memObj.preferences || [],
+      milestones: memObj.milestones || [],
+      unresolved: memObj.unresolved || [],
+      userProfile: memObj.userProfile || memObj.user_profile || ''
+    });
+    
+    saveData();
     renderMemoryList(cid);
-    toast('已生成记忆胶囊');
+    toast('成功生成结构化记忆！');
   } catch (e) {
-    toast('总结失败：' + e.message);
+    toast('总结失败：' + e.message, 3000);
   } finally {
-    btn.disabled = false; btn.textContent = '压缩当前角色聊天为记忆';
+    btn.disabled = false; btn.textContent = '压缩当前聊天为结构化记忆';
   }
 }
 
