@@ -18,7 +18,6 @@
   }
   ::-webkit-scrollbar{width:0;height:0}
 
-  /* 状态栏 */
   .statusbar{position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;
     justify-content:space-between;padding:0 28px;font-size:14px;font-weight:600;color:#1a1a1a;
     z-index:100;pointer-events:none}
@@ -33,12 +32,10 @@
     background:currentColor;border-radius:0 2px 2px 0}
   .sb-battery b{display:block;height:100%;width:72%;background:currentColor;border-radius:1px}
 
-  /* 视图 */
   .view{position:absolute;inset:0;display:flex;flex-direction:column;background:#f2f2f7;
     opacity:0;pointer-events:none;transition:opacity .18s;z-index:1}
   .view.active{opacity:1;pointer-events:auto;z-index:2}
 
-  /* ===== 桌面 ===== */
   #view-home{background:linear-gradient(160deg,#ffd9e8 0%,#f5d1f7 30%,#e3d0ff 60%,#d3c6ff 100%);
     padding-top:90px;align-items:center;overflow:hidden}
   #view-home::before,#view-home::after{content:'';position:absolute;border-radius:50%;filter:blur(50px);opacity:.55;pointer-events:none}
@@ -59,7 +56,6 @@
     background:#ff3b30;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;
     justify-content:center;padding:0 5px;border:2px solid #f7eaff}
 
-  /* 导航 */
   .nav{flex-shrink:0;padding-top:48px;height:104px;display:grid;grid-template-columns:56px 1fr 56px;
     align-items:center;background:rgba(250,250,252,.94);backdrop-filter:blur(16px);
     -webkit-backdrop-filter:blur(16px);border-bottom:.5px solid rgba(0,0,0,.12);
@@ -69,7 +65,6 @@
     cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:400}
   .nav-btn:active{opacity:.45}
 
-  /* ===== 信息 App ===== */
   #view-info{background:#fff}
   .tab-page{position:absolute;inset:0;display:none;flex-direction:column}
   .tab-page.active{display:flex}
@@ -102,7 +97,6 @@
     justify-content:center;flex-shrink:0}
   .empty-tip{text-align:center;color:#b6b6bd;font-size:14px;padding:60px 20px;line-height:1.8}
 
-  /* 朋友圈 */
   .moment{display:flex;gap:12px;padding:14px 16px;background:#fff;
     border-bottom:.5px solid #f0f0f3}
   .moment .avatar{width:42px;height:42px;font-size:22px}
@@ -112,7 +106,6 @@
     white-space:pre-wrap;word-break:break-word}
   .moment-foot{font-size:12px;color:#b0b0b6;margin-top:8px}
 
-  /* 我 */
   .me-card{display:flex;align-items:center;gap:14px;padding:24px 20px;background:#fff}
   .me-card .avatar{width:64px;height:64px;font-size:32px}
   .me-name{font-size:20px;font-weight:600}
@@ -122,7 +115,6 @@
   .menu-item:active{background:#f7f7fa}
   .menu-val{color:#8e8e93;font-size:14px}
 
-  /* ===== 聊天页 ===== */
   #view-chat{background:#f2f2f7}
   .chat-title{display:flex;align-items:center;justify-content:center;gap:8px;
     overflow:hidden;min-width:0;padding:0 4px}
@@ -161,13 +153,13 @@
   .input-bar button:disabled{opacity:.4}
   .input-bar button:active:not(:disabled){transform:scale(.95)}
 
-  /* ===== 通用卡片/表单 ===== */
   .card{background:#fff;border-radius:14px;padding:4px 16px;
     box-shadow:0 1px 3px rgba(0,0,0,.05)}
   .hint{font-size:12px;color:#a5a5ad;line-height:1.7;padding:8px 20px 0}
   .mfield{margin:12px 0}
   .mfield label{display:block;font-size:12px;color:#8e8e93;margin-bottom:6px}
-  .mfield input,.mfield textarea,.mfield select{width:100%;border:1px solid #e2e2e8;
+  .mfield input[type=text],.mfield input[type=password],.mfield input[type=number],
+  .mfield textarea,.mfield select{width:100%;border:1px solid #e2e2e8;
     border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;outline:none;
     background:#fafafc;color:#111}
   .mfield textarea{resize:vertical;line-height:1.5}
@@ -186,7 +178,6 @@
     background:#fafafc;border:1px solid #e8e8ee;font-size:15px}
   .check-item input{width:18px;height:18px;accent-color:#ff6bb5}
 
-  /* 世界书 */
   .wb-item{background:#fff;margin:10px 12px;padding:14px 16px;border-radius:12px;
     cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05)}
   .wb-item:active{background:#fafafc}
@@ -194,7 +185,42 @@
   .wb-meta{font-size:11px;color:#ff6bb5;margin-top:4px}
   .wb-content{font-size:13px;color:#8e8e93;margin-top:6px;line-height:1.5}
 
-  /* ===== 模态框 ===== */
+  /* ===== API 设置页 ===== */
+  .api-tabs{flex-shrink:0;display:flex;gap:6px;padding:10px 12px;background:#f2f2f7}
+  .api-tab{flex:1;height:38px;border-radius:10px;border:none;background:#fff;
+    font-size:13px;font-weight:600;color:#666;cursor:pointer;font-family:inherit;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);transition:all .15s}
+  .api-tab.active{background:#ff6bb5;color:#fff;box-shadow:0 2px 6px rgba(255,107,181,.4)}
+  .api-panel{display:none;padding-bottom:30px}
+  .api-panel.active{display:block}
+  .api-section-title{font-size:13px;font-weight:600;color:#4a2a5a;padding:16px 16px 6px}
+  .api-section-title .sub{font-size:11px;color:#a5a5ad;font-weight:400;margin-left:6px}
+
+  .temp-slider{width:100%;accent-color:#ff6bb5;height:24px;margin-top:2px}
+  .temp-val{color:#ff6bb5;font-weight:700;font-size:13px;margin-left:4px}
+  .temp-hint{font-size:11px;color:#a5a5ad;margin-top:2px;display:flex;justify-content:space-between}
+  .temp-hint span{flex:1;text-align:center}
+
+  /* ===== 系统页 ===== */
+  .sys-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0}
+  .sys-title{font-size:16px;font-weight:600;color:#111}
+  .sys-desc{font-size:12px;color:#8e8e93;margin-top:4px;line-height:1.5}
+  .switch{position:relative;display:inline-block;width:50px;height:30px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0;position:absolute}
+  .switch span{position:absolute;cursor:pointer;inset:0;background:#d8d8dc;border-radius:30px;
+    transition:.25s}
+  .switch span::before{content:'';position:absolute;width:24px;height:24px;left:3px;top:3px;
+    background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .switch input:checked + span{background:#ff6bb5}
+  .switch input:checked + span::before{transform:translateX(20px)}
+  .status-row{display:flex;justify-content:space-between;padding:11px 0;
+    border-bottom:.5px solid #f0f0f3;font-size:14px}
+  .status-row:last-child{border-bottom:none}
+  .status-label{color:#666}
+  .status-value{color:#b0b0b6;font-weight:500}
+  .status-value.ok{color:#2fbf6a;font-weight:600}
+
+  /* 模态框 */
   .modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.42);display:flex;
     align-items:flex-end;justify-content:center;z-index:300;opacity:0;pointer-events:none;
     transition:opacity .2s}
@@ -210,7 +236,6 @@
     padding:4px 8px}
   .modal-body{padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;flex:1}
 
-  /* Toast */
   .toast{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
     background:rgba(0,0,0,.8);color:#fff;padding:11px 22px;border-radius:12px;font-size:14px;
     z-index:400;pointer-events:none;animation:toastIn .18s ease;max-width:78%;text-align:center;
@@ -223,7 +248,6 @@
 <div class="phone">
   <div class="screen" id="screen">
 
-    <!-- 状态栏 -->
     <div class="statusbar" id="statusbar">
       <span id="sbTime">9:41</span>
       <span class="sb-icons">
@@ -232,7 +256,7 @@
       </span>
     </div>
 
-    <!-- ===== 桌面 ===== -->
+    <!-- 桌面 -->
     <div class="view active" id="view-home">
       <div class="home-clock">
         <div class="hc-time" id="homeTime">9:41</div>
@@ -241,10 +265,8 @@
       <div class="app-grid" id="appGrid"></div>
     </div>
 
-    <!-- ===== 信息 App ===== -->
+    <!-- 信息 App -->
     <div class="view" id="view-info">
-
-      <!-- 聊天 -->
       <div class="tab-page active" data-tab="chats">
         <div class="nav">
           <button class="nav-btn" data-go-home>‹</button>
@@ -253,8 +275,6 @@
         </div>
         <div class="tab-body" id="chatListBody"></div>
       </div>
-
-      <!-- 联系人 -->
       <div class="tab-page" data-tab="contacts">
         <div class="nav">
           <button class="nav-btn" data-go-home>‹</button>
@@ -263,8 +283,6 @@
         </div>
         <div class="tab-body" id="contactListBody"></div>
       </div>
-
-      <!-- 朋友圈 -->
       <div class="tab-page" data-tab="moments">
         <div class="nav">
           <button class="nav-btn" data-go-home>‹</button>
@@ -273,8 +291,6 @@
         </div>
         <div class="tab-body" id="momentsBody"></div>
       </div>
-
-      <!-- 我 -->
       <div class="tab-page" data-tab="me">
         <div class="nav">
           <button class="nav-btn" data-go-home>‹</button>
@@ -283,8 +299,6 @@
         </div>
         <div class="tab-body" id="meBody"></div>
       </div>
-
-      <!-- 底部 Tab -->
       <div class="tabbar">
         <div class="tab active" data-tab="chats"><span>💬</span><em>聊天</em></div>
         <div class="tab" data-tab="contacts"><span>👥</span><em>联系人</em></div>
@@ -293,7 +307,7 @@
       </div>
     </div>
 
-    <!-- ===== 聊天详情 ===== -->
+    <!-- 聊天详情 -->
     <div class="view" id="view-chat">
       <div class="nav">
         <button class="nav-btn" id="chatBack">‹</button>
@@ -311,28 +325,131 @@
       </div>
     </div>
 
-    <!-- ===== API 设置 ===== -->
+    <!-- API 设置（三板块） -->
     <div class="view" id="view-api">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
         <h1>API 设置</h1>
         <span></span>
       </div>
-      <div class="scroll-body" style="padding-bottom:30px">
-        <div class="card" style="margin:14px 12px">
-          <div class="mfield"><label>Base URL</label>
-            <input id="setBaseURL" placeholder="https://api.deepseek.com/v1"></div>
-          <div class="mfield"><label>API Key</label>
-            <input id="setApiKey" type="password" placeholder="sk-..."></div>
-          <div class="mfield"><label>模型名称</label>
-            <input id="setModel" placeholder="deepseek-chat"></div>
+      <div class="api-tabs">
+        <button class="api-tab active" data-api-tab="api">API</button>
+        <button class="api-tab" data-api-tab="voice">语音设置</button>
+        <button class="api-tab" data-api-tab="image">生图设置</button>
+      </div>
+      <div class="scroll-body">
+
+        <!-- API 板块 -->
+        <div class="api-panel active" data-api-panel="api">
+          <div class="api-section-title">主 API <span class="sub">用于线上/线下聊天</span></div>
+          <div class="card" style="margin:0 12px">
+            <div class="mfield"><label>Base URL</label>
+              <input id="mainBaseURL" placeholder="https://api.deepseek.com/v1"></div>
+            <div class="mfield"><label>API Key</label>
+              <input id="mainApiKey" type="password" placeholder="sk-..."></div>
+            <div class="mfield"><label>模型名称</label>
+              <input id="mainModel" placeholder="deepseek-chat"></div>
+            <div class="mfield">
+              <label>温度 (temperature) <span class="temp-val" id="mainTempVal">0.9</span></label>
+              <input type="range" id="mainTemp" class="temp-slider" min="0" max="2" step="0.05" value="0.9">
+              <div class="temp-hint"><span>0 严谨</span><span>0.7 平衡</span><span>1.2 创意</span><span>2 天马行空</span></div>
+            </div>
+          </div>
+
+          <div class="api-section-title">副 API <span class="sub">用于记忆生成等额外项目</span></div>
+          <div class="card" style="margin:0 12px">
+            <div class="mfield"><label>Base URL</label>
+              <input id="subBaseURL" placeholder="https://api.deepseek.com/v1"></div>
+            <div class="mfield"><label>API Key</label>
+              <input id="subApiKey" type="password" placeholder="sk-..."></div>
+            <div class="mfield"><label>模型名称</label>
+              <input id="subModel" placeholder="deepseek-chat"></div>
+            <div class="mfield">
+              <label>温度 (temperature) <span class="temp-val" id="subTempVal">0.7</span></label>
+              <input type="range" id="subTemp" class="temp-slider" min="0" max="2" step="0.05" value="0.7">
+              <div class="temp-hint"><span>0 严谨</span><span>0.7 平衡</span><span>1.2 创意</span><span>2 天马行空</span></div>
+            </div>
+            <button class="btn secondary" id="copyFromMain" style="margin:4px 0 14px">从主 API 复制</button>
+          </div>
+          <div class="hint">兼容 OpenAI 格式的接口均可。地址填到 <code>/v1</code> 结尾，程序会自动补 <code>/chat/completions</code>。Key 只存在本机浏览器。</div>
         </div>
-        <div class="hint">兼容 OpenAI 格式的接口均可（DeepSeek / 中转站 / Ollama 等）。地址填到 <code>/v1</code> 结尾，程序自动补 <code>/chat/completions</code>。Key 只存在你本机浏览器。</div>
-        <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveApiBtn">保存</button>
+
+        <!-- 语音设置板块 -->
+        <div class="api-panel" data-api-panel="voice">
+          <div class="api-section-title">MiniMax 语音 <span class="sub">外接 T2A 语音合成</span></div>
+          <div class="card" style="margin:0 12px">
+            <div class="mfield"><label>API Key</label>
+              <input id="voiceApiKey" type="password" placeholder="MiniMax API Key"></div>
+            <div class="mfield"><label>Group ID</label>
+              <input id="voiceGroupId" placeholder="MiniMax 的 GroupId"></div>
+            <div class="mfield"><label>模型</label>
+              <select id="voiceModel">
+                <option value="speech-02-hd">speech-02-hd（高清）</option>
+                <option value="speech-02-turbo">speech-02-turbo（快速）</option>
+                <option value="speech-01-hd">speech-01-hd</option>
+                <option value="speech-01">speech-01</option>
+              </select>
+            </div>
+            <div class="mfield"><label>音色 Voice ID</label>
+              <input id="voiceVoiceId" placeholder="如 female-shaonv / male-qn-qingse"></div>
+            <div class="mfield"><label>语速 speed（0.5 ~ 2）</label>
+              <input id="voiceSpeed" type="number" min="0.5" max="2" step="0.1" value="1.0"></div>
+            <div class="mfield"><label>音量 volume（0 ~ 10）</label>
+              <input id="voiceVolume" type="number" min="0" max="10" step="0.5" value="1.0"></div>
+          </div>
+          <div class="hint">
+            语音接口地址默认 <code>https://api.minimax.chat/v1/t2a_v2</code>，调用时会把 GroupId 拼在 URL 上。<br>
+            语音功能会在后续版本接入聊天，这里先配置好。
+          </div>
+        </div>
+
+        <!-- 生图设置板块 -->
+        <div class="api-panel" data-api-panel="image">
+          <div class="api-section-title">GPT 生图 <span class="sub">外接 OpenAI Images</span></div>
+          <div class="card" style="margin:0 12px">
+            <div class="mfield"><label>Base URL</label>
+              <input id="imgBaseURL" placeholder="https://api.openai.com/v1"></div>
+            <div class="mfield"><label>API Key</label>
+              <input id="imgApiKey" type="password" placeholder="sk-..."></div>
+            <div class="mfield"><label>模型</label>
+              <select id="imgModel">
+                <option value="dall-e-3">dall-e-3</option>
+                <option value="dall-e-2">dall-e-2</option>
+                <option value="gpt-image-1">gpt-image-1</option>
+              </select>
+            </div>
+            <div class="mfield"><label>尺寸</label>
+              <select id="imgSize">
+                <option value="1024x1024">1024×1024（方形）</option>
+                <option value="1024x1792">1024×1792（竖版）</option>
+                <option value="1792x1024">1792×1024（横版）</option>
+                <option value="512x512">512×512</option>
+              </select>
+            </div>
+            <div class="mfield"><label>质量</label>
+              <select id="imgQuality">
+                <option value="standard">standard</option>
+                <option value="hd">hd</option>
+                <option value="high">high（gpt-image-1）</option>
+                <option value="medium">medium（gpt-image-1）</option>
+                <option value="low">low（gpt-image-1）</option>
+              </select>
+            </div>
+          </div>
+          <div class="hint">
+            生图接口默认 <code>/images/generations</code>，与 OpenAI 兼容。<br>
+            生图功能会在后续版本接入（如角色发图、朋友圈配图等）。
+          </div>
+        </div>
+
+      </div>
+      <div style="flex-shrink:0;padding:10px 12px calc(14px + env(safe-area-inset-bottom));
+        background:rgba(250,250,252,.96);border-top:.5px solid rgba(0,0,0,.1)">
+        <button class="btn" id="saveApiBtn" style="margin:0">保存全部设置</button>
       </div>
     </div>
 
-    <!-- ===== 美化 ===== -->
+    <!-- 美化 -->
     <div class="view" id="view-beauty">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -346,7 +463,7 @@
       </div>
     </div>
 
-    <!-- ===== 记忆 ===== -->
+    <!-- 记忆 -->
     <div class="view" id="view-memory">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -363,7 +480,7 @@
       </div>
     </div>
 
-    <!-- ===== 世界书 ===== -->
+    <!-- 世界书 -->
     <div class="view" id="view-worldbook">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -373,7 +490,7 @@
       <div class="scroll-body" id="wbBody"></div>
     </div>
 
-    <!-- ===== 数据 ===== -->
+    <!-- 数据 -->
     <div class="view" id="view-data">
       <div class="nav">
         <button class="nav-btn" data-go-home>‹</button>
@@ -390,7 +507,39 @@
       </div>
     </div>
 
-    <!-- ===== 模态框 ===== -->
+    <!-- 系统 -->
+    <div class="view" id="view-system">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>系统</h1>
+        <span></span>
+      </div>
+      <div class="scroll-body" style="padding:20px 12px">
+        <div class="card">
+          <div class="sys-row">
+            <div style="flex:1;min-width:0">
+              <div class="sys-title">后台保活模式</div>
+              <div class="sys-desc">保持页面活跃，防止浏览器挂起。开启后会尝试屏幕常亮、静音音频和心跳定时器。</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="keepAliveToggle">
+              <span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="api-section-title">保活状态</div>
+        <div class="card" id="keepAliveStatus"></div>
+
+        <div class="hint" style="padding:14px 6px 0">
+          后台保活会尝试使用屏幕常亮（Wake Lock）、静音音频和心跳定时器来保持页面活跃。<br><br>
+          注意：iOS Safari 对后台运行限制较严，保活效果有限。建议把本页「添加到主屏幕」后使用。<br><br>
+          保活状态保存在本机，重新打开页面后需要手动再点一次开关。
+        </div>
+      </div>
+    </div>
+
+    <!-- 模态框 -->
     <div class="modal-mask" id="modalMask">
       <div class="modal">
         <div class="modal-head">
@@ -416,16 +565,43 @@ const HOME_APPS = [
   { id:'beauty',    name:'美化',     icon:'🎨', bg:'linear-gradient(180deg,#ffb8dd,#ff5fa8)' },
   { id:'memory',    name:'记忆',     icon:'🧠', bg:'linear-gradient(180deg,#c9aeff,#8b5cf6)' },
   { id:'worldbook', name:'世界书',   icon:'📖', bg:'linear-gradient(180deg,#9ad9ff,#3b9bff)' },
-  { id:'data',      name:'数据',     icon:'💾', bg:'linear-gradient(180deg,#d6d6de,#8e8e99)' }
+  { id:'data',      name:'数据',     icon:'💾', bg:'linear-gradient(180deg,#d6d6de,#8e8e99)' },
+  { id:'system',    name:'系统',     icon:'🛠️', bg:'linear-gradient(180deg,#b5e8d5,#3fb894)' }
 ];
 
 const DEFAULT_DATA = {
   settings: {
-    baseURL: 'https://api.deepseek.com/v1',
-    apiKey: '',
-    model: 'deepseek-chat',
+    mainApi: {
+      baseURL: 'https://api.deepseek.com/v1',
+      apiKey: '',
+      model: 'deepseek-chat',
+      temperature: 0.9
+    },
+    subApi: {
+      baseURL: 'https://api.deepseek.com/v1',
+      apiKey: '',
+      model: 'deepseek-chat',
+      temperature: 0.7
+    },
+    voice: {
+      baseURL: 'https://api.minimax.chat/v1',
+      apiKey: '',
+      groupId: '',
+      model: 'speech-02-hd',
+      voiceId: 'female-shaonv',
+      speed: 1.0,
+      volume: 1.0
+    },
+    image: {
+      baseURL: 'https://api.openai.com/v1',
+      apiKey: '',
+      model: 'dall-e-3',
+      size: '1024x1024',
+      quality: 'standard'
+    },
     userPersona: '一个喜欢折腾 AI 的普通用户，平时话不多但挺有趣。',
-    memoryTurns: 20
+    memoryTurns: 20,
+    keepAlive: false
   },
   user: { name: '我', avatar: '🙂' },
   characters: [
@@ -454,6 +630,16 @@ let currentCharId = null;
 let currentTab = 'chats';
 let busy = false;
 
+const keepAliveState = {
+  active: false,
+  wakeLock: null,
+  audioCtx: null,
+  oscillator: null,
+  timer: null,
+  lastBeat: 0,
+  wakeLockSupported: (typeof navigator !== 'undefined') && ('wakeLock' in navigator)
+};
+
 /* ---------- 工具 ---------- */
 const $ = id => document.getElementById(id);
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -475,6 +661,30 @@ function toast(msg, ms=1800){
   setTimeout(()=>el.remove(), ms);
 }
 
+/* ---------- 设置迁移 ---------- */
+function migrateSettings(old){
+  const base = clone(DEFAULT_DATA.settings);
+  if (!old || typeof old !== 'object') return base;
+
+  // 旧版单 API → 主/副 API
+  if (old.baseURL || old.apiKey || old.model) {
+    base.mainApi.baseURL = old.baseURL || base.mainApi.baseURL;
+    base.mainApi.apiKey  = old.apiKey  || '';
+    base.mainApi.model   = old.model   || base.mainApi.model;
+    base.subApi.baseURL  = old.baseURL || base.subApi.baseURL;
+    base.subApi.apiKey   = old.apiKey  || '';
+    base.subApi.model    = old.model   || base.subApi.model;
+  }
+  if (old.mainApi) base.mainApi = Object.assign(base.mainApi, old.mainApi);
+  if (old.subApi)  base.subApi  = Object.assign(base.subApi,  old.subApi);
+  if (old.voice)   base.voice   = Object.assign(base.voice,   old.voice);
+  if (old.image)   base.image   = Object.assign(base.image,   old.image);
+  if (old.userPersona !== undefined) base.userPersona = old.userPersona;
+  if (old.memoryTurns !== undefined) base.memoryTurns = old.memoryTurns;
+  if (old.keepAlive !== undefined)   base.keepAlive   = !!old.keepAlive;
+  return base;
+}
+
 /* ---------- 数据读写 ---------- */
 function loadData(){
   try{
@@ -483,7 +693,7 @@ function loadData(){
     const p=JSON.parse(raw);
     const base=clone(DEFAULT_DATA);
     return {
-      settings: Object.assign(base.settings, p.settings||{}),
+      settings: migrateSettings(p.settings),
       user: Object.assign(base.user, p.user||{}),
       characters: Array.isArray(p.characters)&&p.characters.length ? p.characters : base.characters,
       chats: p.chats||{},
@@ -499,7 +709,7 @@ function saveData(){
 }
 
 /* ---------- 视图 ---------- */
-const VIEWS=['home','info','chat','api','beauty','memory','worldbook','data'];
+const VIEWS=['home','info','chat','api','beauty','memory','worldbook','data','system'];
 function showView(name){
   VIEWS.forEach(v=>{
     const el=$('view-'+v);
@@ -547,17 +757,18 @@ function renderHome(){
 
 function openApp(id){
   switch(id){
-    case 'info':     showView('info'); switchTab(currentTab); break;
-    case 'api':      openApiSettings(); break;
-    case 'beauty':   showView('beauty'); break;
-    case 'memory':   openMemorySettings(); break;
-    case 'worldbook':renderWorldbook(); showView('worldbook'); break;
-    case 'data':     showView('data'); break;
+    case 'info':      showView('info'); switchTab(currentTab); break;
+    case 'api':       openApiSettings(); break;
+    case 'beauty':    showView('beauty'); break;
+    case 'memory':    openMemorySettings(); break;
+    case 'worldbook': renderWorldbook(); showView('worldbook'); break;
+    case 'data':      showView('data'); break;
+    case 'system':    openSystem(); break;
   }
 }
 
 /* ==========================================================
-   信息 App · 四个 Tab
+   信息 App
    ========================================================== */
 function switchTab(tab){
   currentTab=tab;
@@ -573,7 +784,6 @@ function switchTab(tab){
   else if(tab==='me') renderMeTab();
 }
 
-/* ---------- Tab 1：聊天 ---------- */
 function renderChatsTab(){
   const body=$('chatListBody');
   const list=data.characters.filter(c=>c.added).map(c=>{
@@ -605,7 +815,6 @@ function renderChatsTab(){
   });
 }
 
-/* ---------- Tab 2：联系人 ---------- */
 function renderContactsTab(){
   const body=$('contactListBody');
   const list=data.characters.filter(c=>!c.isGroup);
@@ -631,7 +840,6 @@ function renderContactsTab(){
   });
 }
 
-/* ---------- Tab 3：朋友圈 ---------- */
 function renderMomentsTab(){
   const body=$('momentsBody');
   const list=[...data.moments].sort((a,b)=>b.ts-a.ts);
@@ -651,7 +859,6 @@ function renderMomentsTab(){
     </div>`).join('');
 }
 
-/* ---------- Tab 4：我 ---------- */
 function renderMeTab(){
   const body=$('meBody');
   body.innerHTML=`
@@ -691,7 +898,6 @@ function openChat(id){
   currentCharId=id;
   ensureGreeting(id);
 
-  // 标记已读
   (data.chats[id]||[]).forEach(m=>{ if(m.role==='assistant') m.read=true; });
   saveData();
 
@@ -730,7 +936,6 @@ function updateRecvBtn(){
   $('recvBtn').disabled = busy || !last || last.role!=='user';
 }
 
-/* ---------- 发送（只入聊天记录，不触发 AI） ---------- */
 function sendMessage(){
   if(!currentCharId) return;
   const input=$('msgInput');
@@ -745,15 +950,14 @@ function sendMessage(){
   updateRecvBtn();
 }
 
-/* ---------- 接收（点了才请求 AI） ---------- */
 async function receiveMessage(){
   if(busy||!currentCharId) return;
   const c=getChar(currentCharId);
   const chat=data.chats[currentCharId];
   if(!c||!chat||!chat.length) return;
 
-  if(!data.settings.apiKey){
-    toast('请先到「API设置」填写 Key');
+  if(!data.settings.mainApi.apiKey){
+    toast('请先到「API设置」填写主 API Key');
     return;
   }
 
@@ -764,7 +968,6 @@ async function receiveMessage(){
   const chatIdAt=currentCharId;
   const box=$('messages');
 
-  // 打字动画
   const typing=document.createElement('div');
   typing.className='msg-row them';
   typing.innerHTML=`<div class="avatar">${esc(c.avatar)}</div>
@@ -793,7 +996,7 @@ async function receiveMessage(){
     const turns=Math.max(2, parseInt(data.settings.memoryTurns,10)||20);
     const hist=chat.slice(-turns*2);
     const messages=buildMessages(c,hist);
-    const reply=await callChat(messages,onDelta);
+    const reply=await callChat(messages,onDelta,'main');
 
     typing.remove();
     if(!acc) acc=reply||'';
@@ -821,7 +1024,7 @@ async function receiveMessage(){
 }
 
 /* ==========================================================
-   提示词构建（含世界书）
+   提示词构建
    ========================================================== */
 function buildSystemPrompt(c, wb){
   const before=wb.filter(e=>e.position==='before').map(e=>e.content);
@@ -861,7 +1064,6 @@ function buildMessages(c, history){
 
   const hist=history.map(m=>({role:m.role,content:m.content}));
 
-  // 深度插入（从深到浅，避免索引互相影响）
   const depthItems=wb.filter(e=>e.position==='depth')
     .sort((a,b)=>(b.depth||0)-(a.depth||0));
   for(const item of depthItems){
@@ -877,24 +1079,33 @@ function buildMessages(c, history){
 }
 
 /* ==========================================================
-   API 调用（流式）
+   API 调用
    ========================================================== */
-async function callChat(messages, onDelta){
-  const s=data.settings;
-  let base=(s.baseURL||'').trim().replace(/\/+$/,'');
+async function callChat(messages, onDelta, apiType){
+  apiType = apiType || 'main';
+  const isSub = apiType === 'sub';
+  const api = isSub ? data.settings.subApi : data.settings.mainApi;
+
+  if(!api.apiKey) throw new Error(`请先在「API设置」填写${isSub?'副':'主'} API Key`);
+  if(!api.baseURL) throw new Error('请先填写 Base URL');
+
+  let base=(api.baseURL||'').trim().replace(/\/+$/,'');
   const url=base.endsWith('/chat/completions') ? base : base+'/chat/completions';
+
+  const temperature = (typeof api.temperature === 'number') ? api.temperature
+    : (isSub ? 0.7 : 0.9);
 
   const res=await fetch(url,{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'Authorization':'Bearer '+s.apiKey
+      'Authorization':'Bearer '+api.apiKey
     },
     body:JSON.stringify({
-      model:s.model||'deepseek-chat',
+      model:api.model||'deepseek-chat',
       messages,
       stream:true,
-      temperature:0.9,
+      temperature,
       max_tokens:800
     })
   });
@@ -1129,7 +1340,7 @@ function charPostMoment(){
 async function generateMoments(charId, count){
   const c=getChar(charId);
   if(!c) return;
-  if(!data.settings.apiKey){ toast('请先到「API设置」填写 Key'); return; }
+  if(!data.settings.subApi.apiKey){ toast('请先到「API设置」填写副 API Key'); return; }
 
   toast('正在生成 '+count+' 条朋友圈…', 30000);
 
@@ -1146,7 +1357,7 @@ async function generateMoments(charId, count){
   ];
 
   try{
-    const raw=await callChat(messages,null);
+    const raw=await callChat(messages,null,'sub');
     let arr=parseJsonArray(raw);
     if(!arr||!arr.length) throw new Error('返回内容无法解析');
     arr=arr.slice(0,count);
@@ -1325,21 +1536,87 @@ function openAddContactMenu(){
 }
 
 /* ==========================================================
-   设置页
+   API 设置页
    ========================================================== */
+function switchApiTab(tab){
+  document.querySelectorAll('.api-tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.apiTab===tab);
+  });
+  document.querySelectorAll('.api-panel').forEach(p=>{
+    p.classList.toggle('active', p.dataset.apiPanel===tab);
+  });
+}
+
+function bindTempSlider(sliderId, valId){
+  const slider=$(sliderId), val=$(valId);
+  if(!slider||!val) return;
+  slider.addEventListener('input', ()=>{ val.textContent = slider.value; });
+}
+
 function openApiSettings(){
-  $('setBaseURL').value=data.settings.baseURL||'';
-  $('setApiKey').value=data.settings.apiKey||'';
-  $('setModel').value=data.settings.model||'';
+  const s=data.settings;
+
+  $('mainBaseURL').value=s.mainApi.baseURL||'';
+  $('mainApiKey').value=s.mainApi.apiKey||'';
+  $('mainModel').value=s.mainApi.model||'';
+  $('mainTemp').value=(s.mainApi.temperature!=null? s.mainApi.temperature : 0.9);
+  $('mainTempVal').textContent=$('mainTemp').value;
+
+  $('subBaseURL').value=s.subApi.baseURL||'';
+  $('subApiKey').value=s.subApi.apiKey||'';
+  $('subModel').value=s.subApi.model||'';
+  $('subTemp').value=(s.subApi.temperature!=null? s.subApi.temperature : 0.7);
+  $('subTempVal').textContent=$('subTemp').value;
+
+  $('voiceApiKey').value=s.voice.apiKey||'';
+  $('voiceGroupId').value=s.voice.groupId||'';
+  $('voiceModel').value=s.voice.model||'speech-02-hd';
+  $('voiceVoiceId').value=s.voice.voiceId||'';
+  $('voiceSpeed').value=s.voice.speed!=null? s.voice.speed : 1.0;
+  $('voiceVolume').value=s.voice.volume!=null? s.voice.volume : 1.0;
+
+  $('imgBaseURL').value=s.image.baseURL||'';
+  $('imgApiKey').value=s.image.apiKey||'';
+  $('imgModel').value=s.image.model||'dall-e-3';
+  $('imgSize').value=s.image.size||'1024x1024';
+  $('imgQuality').value=s.image.quality||'standard';
+
+  switchApiTab('api');
   showView('api');
 }
+
 function saveApiSettings(){
-  data.settings.baseURL=$('setBaseURL').value.trim();
-  data.settings.apiKey=$('setApiKey').value.trim();
-  data.settings.model=$('setModel').value.trim();
+  const s=data.settings;
+
+  s.mainApi.baseURL=$('mainBaseURL').value.trim();
+  s.mainApi.apiKey=$('mainApiKey').value.trim();
+  s.mainApi.model=$('mainModel').value.trim();
+  s.mainApi.temperature=parseFloat($('mainTemp').value);
+  if(isNaN(s.mainApi.temperature)) s.mainApi.temperature=0.9;
+
+  s.subApi.baseURL=$('subBaseURL').value.trim();
+  s.subApi.apiKey=$('subApiKey').value.trim();
+  s.subApi.model=$('subModel').value.trim();
+  s.subApi.temperature=parseFloat($('subTemp').value);
+  if(isNaN(s.subApi.temperature)) s.subApi.temperature=0.7;
+
+  s.voice.apiKey=$('voiceApiKey').value.trim();
+  s.voice.groupId=$('voiceGroupId').value.trim();
+  s.voice.model=$('voiceModel').value;
+  s.voice.voiceId=$('voiceVoiceId').value.trim();
+  s.voice.speed=parseFloat($('voiceSpeed').value)||1.0;
+  s.voice.volume=parseFloat($('voiceVolume').value)||1.0;
+
+  s.image.baseURL=$('imgBaseURL').value.trim();
+  s.image.apiKey=$('imgApiKey').value.trim();
+  s.image.model=$('imgModel').value;
+  s.image.size=$('imgSize').value;
+  s.image.quality=$('imgQuality').value;
+
   saveData();
-  toast('已保存');
+  toast('已保存全部设置');
 }
+
 function openMemorySettings(){
   $('setMemory').value=data.settings.memoryTurns||20;
   showView('memory');
@@ -1350,7 +1627,115 @@ function saveMemorySettings(){
   toast('已保存');
 }
 
-/* ---------- 清空聊天 ---------- */
+/* ==========================================================
+   系统 · 后台保活
+   ========================================================== */
+function renderKeepAliveStatus(){
+  const el=$('keepAliveStatus');
+  if(!el) return;
+  const k=keepAliveState;
+  const audioRunning = !!(k.audioCtx && k.audioCtx.state==='running');
+  const items=[
+    {label:'运行状态', value:k.active?'已开启':'未开启', ok:k.active},
+    {label:'屏幕常亮', value:k.wakeLock?'已激活':(k.wakeLockSupported?'未激活':'不支持'), ok:!!k.wakeLock},
+    {label:'音频保活', value:audioRunning?'运行中':'未运行', ok:audioRunning},
+    {label:'最近心跳', value:k.lastBeat?new Date(k.lastBeat).toLocaleTimeString():'—', ok:true}
+  ];
+  el.innerHTML=items.map(it=>`
+    <div class="status-row">
+      <span class="status-label">${it.label}</span>
+      <span class="status-value ${it.ok?'ok':''}">${it.value}</span>
+    </div>`).join('');
+}
+
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    keepAliveState.wakeLock = await navigator.wakeLock.request('screen');
+    keepAliveState.wakeLock.addEventListener('release', ()=>{
+      keepAliveState.wakeLock = null;
+      if(keepAliveState.active && document.visibilityState==='visible'){
+        setTimeout(()=>{ if(keepAliveState.active) requestWakeLock(); }, 1200);
+      }
+      renderKeepAliveStatus();
+    });
+  }catch(e){
+    keepAliveState.wakeLock = null;
+  }
+}
+
+function startAudioKeepAlive(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    gain.gain.value = 0.0001;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    keepAliveState.audioCtx = ctx;
+    keepAliveState.oscillator = osc;
+  }catch(e){}
+}
+
+async function startKeepAlive(){
+  if(keepAliveState.active) return;
+
+  await requestWakeLock();
+  startAudioKeepAlive();
+
+  keepAliveState.timer = setInterval(()=>{
+    keepAliveState.lastBeat = Date.now();
+    if(keepAliveState.audioCtx && keepAliveState.audioCtx.state==='suspended'){
+      keepAliveState.audioCtx.resume().catch(()=>{});
+    }
+    if(!keepAliveState.wakeLock && document.visibilityState==='visible'){
+      requestWakeLock();
+    }
+    renderKeepAliveStatus();
+  }, 5000);
+
+  keepAliveState.active = true;
+  keepAliveState.lastBeat = Date.now();
+  data.settings.keepAlive = true;
+  saveData();
+  renderKeepAliveStatus();
+}
+
+function stopKeepAlive(){
+  if(keepAliveState.wakeLock){
+    try{ keepAliveState.wakeLock.release(); }catch(e){}
+    keepAliveState.wakeLock = null;
+  }
+  if(keepAliveState.oscillator){
+    try{ keepAliveState.oscillator.stop(); }catch(e){}
+    keepAliveState.oscillator = null;
+  }
+  if(keepAliveState.audioCtx){
+    try{ keepAliveState.audioCtx.close(); }catch(e){}
+    keepAliveState.audioCtx = null;
+  }
+  if(keepAliveState.timer){
+    clearInterval(keepAliveState.timer);
+    keepAliveState.timer = null;
+  }
+  keepAliveState.active = false;
+  data.settings.keepAlive = false;
+  saveData();
+  renderKeepAliveStatus();
+}
+
+function openSystem(){
+  $('keepAliveToggle').checked = keepAliveState.active;
+  renderKeepAliveStatus();
+  showView('system');
+}
+
+/* ==========================================================
+   清空聊天
+   ========================================================== */
 function clearChat(){
   if(!currentCharId) return;
   const c=getChar(currentCharId);
@@ -1365,7 +1750,9 @@ function clearChat(){
   toast('已清空');
 }
 
-/* ---------- 数据导入导出 ---------- */
+/* ==========================================================
+   数据导入导出
+   ========================================================== */
 function exportData(){
   const s=JSON.stringify(data,null,2);
   $('importArea').value=s;
@@ -1383,9 +1770,9 @@ function importData(){
     const p=JSON.parse(s);
     if(!p||!Array.isArray(p.characters)) throw new Error('格式不对');
     data=p;
-    data.settings=Object.assign(clone(DEFAULT_DATA.settings), data.settings||{});
-    data.user=Object.assign(clone(DEFAULT_DATA.user), data.user||{});
-    data.wallet=Object.assign(clone(DEFAULT_DATA.wallet), data.wallet||{});
+    data.settings=migrateSettings(p.settings);
+    data.user=Object.assign(clone(DEFAULT_DATA.user), p.user||{});
+    data.wallet=Object.assign(clone(DEFAULT_DATA.wallet), p.wallet||{});
     data.chats=data.chats||{};
     data.moments=data.moments||[];
     data.worldbook=data.worldbook||[];
@@ -1411,68 +1798,63 @@ function clearAll(){
    事件绑定 & 启动
    ========================================================== */
 (function init(){
-  // 桌面
   renderHome();
 
-  // 信息 App Tab
   document.querySelectorAll('#view-info .tab').forEach(t=>{
     t.addEventListener('click',()=>switchTab(t.dataset.tab));
   });
 
-  // 返回主页
   document.querySelectorAll('[data-go-home]').forEach(b=>{
     b.addEventListener('click',()=>{ renderHome(); showView('home'); });
   });
 
-  // 聊天返回
   $('chatBack').addEventListener('click',()=>{
     renderHome();
     showView('info');
     switchTab('chats');
   });
 
-  // 发送 / 接收
   $('sendBtn').addEventListener('click', sendMessage);
   $('recvBtn').addEventListener('click', receiveMessage);
   $('msgInput').addEventListener('keydown', e=>{
     if(e.key==='Enter' && !e.isComposing){ e.preventDefault(); sendMessage(); }
   });
 
-  // 添加聊天 / 联系人
   $('addChatBtn').addEventListener('click', openAddChatMenu);
   $('addContactBtn').addEventListener('click', openAddContactMenu);
-
-  // 朋友圈菜单
   $('momentMenuBtn').addEventListener('click', momentMenu);
-
-  // 世界书
   $('addWbBtn').addEventListener('click', ()=>editWorldbook(null));
 
-  // 设置保存
+  // API 设置：Tab 切换
+  document.querySelectorAll('.api-tab').forEach(t=>{
+    t.addEventListener('click', ()=>switchApiTab(t.dataset.apiTab));
+  });
+  bindTempSlider('mainTemp','mainTempVal');
+  bindTempSlider('subTemp','subTempVal');
+
+  $('copyFromMain').addEventListener('click', ()=>{
+    $('subBaseURL').value=$('mainBaseURL').value;
+    $('subApiKey').value=$('mainApiKey').value;
+    $('subModel').value=$('mainModel').value;
+    toast('已从主 API 复制地址、Key 和模型');
+  });
+
   $('saveApiBtn').addEventListener('click', saveApiSettings);
   $('saveMemoryBtn').addEventListener('click', saveMemorySettings);
 
-  // 清空聊天
   $('clearChatBtn').addEventListener('click', clearChat);
 
-  // 数据
   $('exportBtn').addEventListener('click', exportData);
   $('importBtn').addEventListener('click', importData);
   $('clearAllBtn').addEventListener('click', clearAll);
 
-  // 模态框
-  $('modalClose').addEventListener('click', closeModal);
-  $('modalMask').addEventListener('click', e=>{
-    if(e.target.id==='modalMask') closeModal();
+  // 系统：后台保活开关
+  $('keepAliveToggle').addEventListener('change', async e=>{
+    if(e.target.checked){
+      await startKeepAlive();
+      toast(keepAliveState.active ? '后台保活已开启' : '开启失败，请重试');
+    }else{
+      stopKeepAlive();
+      toast('后台保活已关闭');
+    }
   });
-
-  // 时钟
-  tick();
-  setInterval(tick,1000);
-
-  // 默认打开桌面
-  showView('home');
-})();
-</script>
-</body>
-</html>
