@@ -206,4 +206,1273 @@
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
     border-bottom:.5px solid #eee;flex-shrink:0}
   .modal-title{font-size:16px;font-weight:600}
-  .modal-close{border:none;background
+  .modal-close{border:none;background:none;font-size:18px;color:#8e8e93;cursor:pointer;
+    padding:4px 8px}
+  .modal-body{padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;flex:1}
+
+  /* Toast */
+  .toast{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.8);color:#fff;padding:11px 22px;border-radius:12px;font-size:14px;
+    z-index:400;pointer-events:none;animation:toastIn .18s ease;max-width:78%;text-align:center;
+    line-height:1.5}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}}
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="screen" id="screen">
+
+    <!-- 状态栏 -->
+    <div class="statusbar" id="statusbar">
+      <span id="sbTime">9:41</span>
+      <span class="sb-icons">
+        <span class="sb-signal"><i></i><i></i><i></i><i></i></span>
+        <span class="sb-battery"><b></b></span>
+      </span>
+    </div>
+
+    <!-- ===== 桌面 ===== -->
+    <div class="view active" id="view-home">
+      <div class="home-clock">
+        <div class="hc-time" id="homeTime">9:41</div>
+        <div class="hc-date" id="homeDate">10月19日 星期日</div>
+      </div>
+      <div class="app-grid" id="appGrid"></div>
+    </div>
+
+    <!-- ===== 信息 App ===== -->
+    <div class="view" id="view-info">
+
+      <!-- 聊天 -->
+      <div class="tab-page active" data-tab="chats">
+        <div class="nav">
+          <button class="nav-btn" data-go-home>‹</button>
+          <h1>聊天</h1>
+          <button class="nav-btn" id="addChatBtn">＋</button>
+        </div>
+        <div class="tab-body" id="chatListBody"></div>
+      </div>
+
+      <!-- 联系人 -->
+      <div class="tab-page" data-tab="contacts">
+        <div class="nav">
+          <button class="nav-btn" data-go-home>‹</button>
+          <h1>联系人</h1>
+          <button class="nav-btn" id="addContactBtn">＋</button>
+        </div>
+        <div class="tab-body" id="contactListBody"></div>
+      </div>
+
+      <!-- 朋友圈 -->
+      <div class="tab-page" data-tab="moments">
+        <div class="nav">
+          <button class="nav-btn" data-go-home>‹</button>
+          <h1>朋友圈</h1>
+          <button class="nav-btn" id="momentMenuBtn">⋯</button>
+        </div>
+        <div class="tab-body" id="momentsBody"></div>
+      </div>
+
+      <!-- 我 -->
+      <div class="tab-page" data-tab="me">
+        <div class="nav">
+          <button class="nav-btn" data-go-home>‹</button>
+          <h1>我</h1>
+          <span></span>
+        </div>
+        <div class="tab-body" id="meBody"></div>
+      </div>
+
+      <!-- 底部 Tab -->
+      <div class="tabbar">
+        <div class="tab active" data-tab="chats"><span>💬</span><em>聊天</em></div>
+        <div class="tab" data-tab="contacts"><span>👥</span><em>联系人</em></div>
+        <div class="tab" data-tab="moments"><span>🌤</span><em>朋友圈</em></div>
+        <div class="tab" data-tab="me"><span>👤</span><em>我</em></div>
+      </div>
+    </div>
+
+    <!-- ===== 聊天详情 ===== -->
+    <div class="view" id="view-chat">
+      <div class="nav">
+        <button class="nav-btn" id="chatBack">‹</button>
+        <div class="chat-title">
+          <div class="avatar" id="chatAvatar">🌙</div>
+          <div class="cname" id="chatName">—</div>
+        </div>
+        <button class="nav-btn" id="clearChatBtn">🗑</button>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="input-bar">
+        <input id="msgInput" placeholder="发消息…" autocomplete="off">
+        <button id="sendBtn">发送</button>
+        <button id="recvBtn">接收</button>
+      </div>
+    </div>
+
+    <!-- ===== API 设置 ===== -->
+    <div class="view" id="view-api">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>API 设置</h1>
+        <span></span>
+      </div>
+      <div class="scroll-body" style="padding-bottom:30px">
+        <div class="card" style="margin:14px 12px">
+          <div class="mfield"><label>Base URL</label>
+            <input id="setBaseURL" placeholder="https://api.deepseek.com/v1"></div>
+          <div class="mfield"><label>API Key</label>
+            <input id="setApiKey" type="password" placeholder="sk-..."></div>
+          <div class="mfield"><label>模型名称</label>
+            <input id="setModel" placeholder="deepseek-chat"></div>
+        </div>
+        <div class="hint">兼容 OpenAI 格式的接口均可（DeepSeek / 中转站 / Ollama 等）。地址填到 <code>/v1</code> 结尾，程序自动补 <code>/chat/completions</code>。Key 只存在你本机浏览器。</div>
+        <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveApiBtn">保存</button>
+      </div>
+    </div>
+
+    <!-- ===== 美化 ===== -->
+    <div class="view" id="view-beauty">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>美化</h1>
+        <span></span>
+      </div>
+      <div class="scroll-body" style="padding:20px 12px">
+        <div class="card" style="padding:20px 16px">
+          <div class="hint" style="padding:0">后续会加：主题配色、聊天气泡样式、字体、背景图等～</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 记忆 ===== -->
+    <div class="view" id="view-memory">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>记忆</h1>
+        <span></span>
+      </div>
+      <div class="scroll-body" style="padding-bottom:30px">
+        <div class="card" style="margin:14px 12px">
+          <div class="mfield"><label>记忆轮数（保留最近多少轮对话）</label>
+            <input id="setMemory" type="number" min="2" max="100"></div>
+        </div>
+        <div class="hint">轮数越少越省 token，越多越记得住。1 轮 = 你一句 + TA 一句。</div>
+        <button class="btn" style="margin:16px 12px;width:calc(100% - 24px)" id="saveMemoryBtn">保存</button>
+      </div>
+    </div>
+
+    <!-- ===== 世界书 ===== -->
+    <div class="view" id="view-worldbook">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>世界书</h1>
+        <button class="nav-btn" id="addWbBtn">＋</button>
+      </div>
+      <div class="scroll-body" id="wbBody"></div>
+    </div>
+
+    <!-- ===== 数据 ===== -->
+    <div class="view" id="view-data">
+      <div class="nav">
+        <button class="nav-btn" data-go-home>‹</button>
+        <h1>数据</h1>
+        <span></span>
+      </div>
+      <div class="scroll-body" style="padding:20px 12px">
+        <button class="btn" id="exportBtn">导出数据</button>
+        <button class="btn secondary" id="importBtn" style="margin-top:10px">导入数据</button>
+        <button class="btn danger" id="clearAllBtn" style="margin-top:10px">清空全部数据</button>
+        <textarea id="importArea" placeholder="粘贴备份 JSON 到这里，再点「导入数据」"
+          style="width:100%;height:130px;margin-top:14px;border:1px solid #e2e2e8;border-radius:10px;
+          padding:10px;font-size:13px;font-family:inherit;outline:none;resize:vertical"></textarea>
+      </div>
+    </div>
+
+    <!-- ===== 模态框 ===== -->
+    <div class="modal-mask" id="modalMask">
+      <div class="modal">
+        <div class="modal-head">
+          <span class="modal-title" id="modalTitle"></span>
+          <button class="modal-close" id="modalClose">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   憨机炮 —— 单文件 AI 小手机
+   ========================================================== */
+const LS_KEY = 'hanjipao_v1';
+
+const HOME_APPS = [
+  { id:'info',      name:'信息',     icon:'💬', bg:'linear-gradient(180deg,#7fe3a3,#2fbf6a)' },
+  { id:'api',       name:'API设置',  icon:'🔑', bg:'linear-gradient(180deg,#ffd98a,#ff9f2e)' },
+  { id:'beauty',    name:'美化',     icon:'🎨', bg:'linear-gradient(180deg,#ffb8dd,#ff5fa8)' },
+  { id:'memory',    name:'记忆',     icon:'🧠', bg:'linear-gradient(180deg,#c9aeff,#8b5cf6)' },
+  { id:'worldbook', name:'世界书',   icon:'📖', bg:'linear-gradient(180deg,#9ad9ff,#3b9bff)' },
+  { id:'data',      name:'数据',     icon:'💾', bg:'linear-gradient(180deg,#d6d6de,#8e8e99)' }
+];
+
+const DEFAULT_DATA = {
+  settings: {
+    baseURL: 'https://api.deepseek.com/v1',
+    apiKey: '',
+    model: 'deepseek-chat',
+    userPersona: '一个喜欢折腾 AI 的普通用户，平时话不多但挺有趣。',
+    memoryTurns: 20
+  },
+  user: { name: '我', avatar: '🙂' },
+  characters: [
+    { id:'c_lin', name:'林小满', avatar:'🌙',
+      persona:'26 岁的深夜电台主播，声音温柔，作息颠倒。喜欢在凌晨分享歌单和碎碎念，说话慢悠悠的，偶尔冒出一点诗意。会关心对方有没有好好睡觉。',
+      greeting:'（轻轻戴上耳机）喂？这么晚还没睡呀…正好，我刚放完一首歌，陪我说说话吧。',
+      added:true, isGroup:false, members:[] },
+    { id:'c_che', name:'阿澈', avatar:'⚡',
+      persona:'和用户认识多年的损友，嘴毒心软，说话直来直去爱吐槽，但关键时刻特别靠谱。喜欢打游戏、熬夜、喝冰美式。',
+      greeting:'哟，稀客啊。怎么想起来找我了？说吧，又摊上什么事了。',
+      added:true, isGroup:false, members:[] },
+    { id:'c_su', name:'苏念', avatar:'🍰',
+      persona:'22 岁，楼下甜品店的店员，甜度超标的邻家女孩。说话喜欢带「呀」「啦」「～」，会分享今天新做的蛋糕，偶尔害羞。',
+      greeting:'呀，是你！今天店里新做了草莓千层，我特意给你留了一块～（小声）别告诉别人哦。',
+      added:false, isGroup:false, members:[] }
+  ],
+  chats: {},
+  moments: [],
+  worldbook: [],
+  wallet: { balance: 0 }
+};
+
+/* ---------- 状态 ---------- */
+let data = loadData();
+let currentCharId = null;
+let currentTab = 'chats';
+let busy = false;
+
+/* ---------- 工具 ---------- */
+const $ = id => document.getElementById(id);
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function truncate(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n)+'…' : s; }
+function uid(p){ return p+'_'+Math.random().toString(36).slice(2,9); }
+function fmtTime(ts){
+  if(!ts) return '';
+  const d=new Date(ts), n=new Date();
+  if(d.toDateString()===n.toDateString())
+    return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  return (d.getMonth()+1)+'/'+d.getDate();
+}
+function getChar(id){ return data.characters.find(c=>c.id===id); }
+function toast(msg, ms=1800){
+  const el=document.createElement('div');
+  el.className='toast'; el.textContent=msg;
+  $('screen').appendChild(el);
+  setTimeout(()=>el.remove(), ms);
+}
+
+/* ---------- 数据读写 ---------- */
+function loadData(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw) return clone(DEFAULT_DATA);
+    const p=JSON.parse(raw);
+    const base=clone(DEFAULT_DATA);
+    return {
+      settings: Object.assign(base.settings, p.settings||{}),
+      user: Object.assign(base.user, p.user||{}),
+      characters: Array.isArray(p.characters)&&p.characters.length ? p.characters : base.characters,
+      chats: p.chats||{},
+      moments: p.moments||[],
+      worldbook: p.worldbook||[],
+      wallet: Object.assign(base.wallet, p.wallet||{})
+    };
+  }catch(e){ return clone(DEFAULT_DATA); }
+}
+function saveData(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+  catch(e){ toast('保存失败：存储空间可能已满'); }
+}
+
+/* ---------- 视图 ---------- */
+const VIEWS=['home','info','chat','api','beauty','memory','worldbook','data'];
+function showView(name){
+  VIEWS.forEach(v=>{
+    const el=$('view-'+v);
+    if(el) el.classList.toggle('active', v===name);
+  });
+}
+
+/* ---------- 时钟 ---------- */
+function tick(){
+  const d=new Date();
+  const t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  $('sbTime').textContent=t;
+  $('homeTime').textContent=t;
+  const wd='日一二三四五六'[d.getDay()];
+  $('homeDate').textContent=`${d.getMonth()+1}月${d.getDate()}日 星期${wd}`;
+}
+
+/* ---------- 未读 ---------- */
+function totalUnread(){
+  let n=0;
+  for(const c of data.characters){
+    if(!c.added) continue;
+    const msgs=data.chats[c.id]||[];
+    n+=msgs.filter(m=>m.role==='assistant'&&!m.read).length;
+  }
+  return n;
+}
+
+/* ---------- 桌面 ---------- */
+function renderHome(){
+  const g=$('appGrid');
+  const unread=totalUnread();
+  g.innerHTML=HOME_APPS.map(app=>{
+    const badge = app.id==='info' && unread>0
+      ? `<span class="app-badge">${unread>99?'99+':unread}</span>` : '';
+    return `<div class="app" data-app="${app.id}">
+      <div class="app-icon" style="background:${app.bg}">${app.icon}${badge}</div>
+      <span>${app.name}</span>
+    </div>`;
+  }).join('');
+  g.querySelectorAll('.app').forEach(el=>{
+    el.addEventListener('click',()=>openApp(el.dataset.app));
+  });
+}
+
+function openApp(id){
+  switch(id){
+    case 'info':     showView('info'); switchTab(currentTab); break;
+    case 'api':      openApiSettings(); break;
+    case 'beauty':   showView('beauty'); break;
+    case 'memory':   openMemorySettings(); break;
+    case 'worldbook':renderWorldbook(); showView('worldbook'); break;
+    case 'data':     showView('data'); break;
+  }
+}
+
+/* ==========================================================
+   信息 App · 四个 Tab
+   ========================================================== */
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('#view-info .tab-page').forEach(p=>{
+    p.classList.toggle('active', p.dataset.tab===tab);
+  });
+  document.querySelectorAll('#view-info .tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.tab===tab);
+  });
+  if(tab==='chats') renderChatsTab();
+  else if(tab==='contacts') renderContactsTab();
+  else if(tab==='moments') renderMomentsTab();
+  else if(tab==='me') renderMeTab();
+}
+
+/* ---------- Tab 1：聊天 ---------- */
+function renderChatsTab(){
+  const body=$('chatListBody');
+  const list=data.characters.filter(c=>c.added).map(c=>{
+    const msgs=data.chats[c.id]||[];
+    const last=msgs[msgs.length-1];
+    const unread=msgs.filter(m=>m.role==='assistant'&&!m.read).length;
+    return {c,last,unread};
+  }).sort((a,b)=>(b.last?b.last.ts:0)-(a.last?a.last.ts:0));
+
+  if(!list.length){
+    body.innerHTML='<div class="empty-tip">还没有聊天对象<br>点右上角 ＋ 从联系人添加</div>';
+    return;
+  }
+  body.innerHTML=list.map(({c,last,unread})=>`
+    <div class="chat-item" data-cid="${c.id}">
+      <div class="avatar">${esc(c.avatar)}</div>
+      <div class="meta">
+        <div class="row1">
+          <span class="name">${esc(c.name)}</span>
+          <span class="time">${last?fmtTime(last.ts):''}</span>
+        </div>
+        <div class="preview">${last?esc(truncate(last.content,36)):'点击开始聊天…'}</div>
+      </div>
+      ${unread?`<span class="unread-badge">${unread>99?'99+':unread}</span>`:''}
+    </div>`).join('');
+
+  body.querySelectorAll('.chat-item').forEach(el=>{
+    el.addEventListener('click',()=>openChat(el.dataset.cid));
+  });
+}
+
+/* ---------- Tab 2：联系人 ---------- */
+function renderContactsTab(){
+  const body=$('contactListBody');
+  const list=data.characters.filter(c=>!c.isGroup);
+
+  if(!list.length){
+    body.innerHTML='<div class="empty-tip">还没有联系人<br>点右上角 ＋ 创建</div>';
+    return;
+  }
+  body.innerHTML=list.map(c=>`
+    <div class="chat-item" data-cid="${c.id}">
+      <div class="avatar">${esc(c.avatar)}</div>
+      <div class="meta">
+        <div class="row1">
+          <span class="name">${esc(c.name)}</span>
+          ${c.added?'<span class="time" style="color:#2fbf6a">已加入聊天</span>':''}
+        </div>
+        <div class="preview">${esc(truncate(c.persona,40))||'暂无描述'}</div>
+      </div>
+    </div>`).join('');
+
+  body.querySelectorAll('.chat-item').forEach(el=>{
+    el.addEventListener('click',()=>editContact(el.dataset.cid));
+  });
+}
+
+/* ---------- Tab 3：朋友圈 ---------- */
+function renderMomentsTab(){
+  const body=$('momentsBody');
+  const list=[...data.moments].sort((a,b)=>b.ts-a.ts);
+
+  if(!list.length){
+    body.innerHTML='<div class="empty-tip">还没有朋友圈<br>点右上角 ⋯ 发一条</div>';
+    return;
+  }
+  body.innerHTML=list.map(m=>`
+    <div class="moment">
+      <div class="avatar">${esc(m.authorAvatar)}</div>
+      <div class="moment-body">
+        <div class="moment-name">${esc(m.authorName)}</div>
+        <div class="moment-text">${esc(m.content)}</div>
+        <div class="moment-foot">${fmtTime(m.ts)}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------- Tab 4：我 ---------- */
+function renderMeTab(){
+  const body=$('meBody');
+  body.innerHTML=`
+    <div class="me-card">
+      <div class="avatar">${esc(data.user.avatar)}</div>
+      <div class="me-name">${esc(data.user.name)}</div>
+    </div>
+    <div class="menu-list">
+      <div class="menu-item" data-act="wallet">💰 钱包
+        <span class="menu-val">¥${(data.wallet.balance||0).toFixed(2)}</span></div>
+      <div class="menu-item" data-act="persona">👤 人设
+        <span class="menu-val">›</span></div>
+    </div>`;
+  body.querySelectorAll('.menu-item').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(el.dataset.act==='wallet') editWallet();
+      else if(el.dataset.act==='persona') editPersona();
+    });
+  });
+}
+
+/* ==========================================================
+   聊天详情
+   ========================================================== */
+function ensureGreeting(id){
+  const c=getChar(id);
+  if(!c) return;
+  if(!data.chats[id]) data.chats[id]=[];
+  if(data.chats[id].length===0 && c.greeting){
+    data.chats[id].push({role:'assistant',content:c.greeting,ts:Date.now(),read:false});
+  }
+}
+
+function openChat(id){
+  const c=getChar(id);
+  if(!c) return;
+  currentCharId=id;
+  ensureGreeting(id);
+
+  // 标记已读
+  (data.chats[id]||[]).forEach(m=>{ if(m.role==='assistant') m.read=true; });
+  saveData();
+
+  $('chatAvatar').textContent=c.avatar;
+  $('chatName').textContent=c.name;
+  renderMessages();
+  updateRecvBtn();
+  showView('chat');
+  renderHome();
+}
+
+function renderMessages(){
+  const box=$('messages');
+  const c=getChar(currentCharId);
+  const msgs=data.chats[currentCharId]||[];
+
+  if(!msgs.length){
+    box.innerHTML='<div class="sys-msg" style="color:#b6b6bd">还没有聊天记录</div>';
+    return;
+  }
+  box.innerHTML=msgs.map(m=>{
+    if(m.role==='user'){
+      return `<div class="msg-row me"><div class="bubble">${esc(m.content)}</div></div>`;
+    }
+    return `<div class="msg-row them">
+      <div class="avatar">${esc(c?c.avatar:'🙂')}</div>
+      <div class="bubble">${esc(m.content)}</div>
+    </div>`;
+  }).join('');
+  box.scrollTop=box.scrollHeight;
+}
+
+function updateRecvBtn(){
+  const msgs=data.chats[currentCharId]||[];
+  const last=msgs[msgs.length-1];
+  $('recvBtn').disabled = busy || !last || last.role!=='user';
+}
+
+/* ---------- 发送（只入聊天记录，不触发 AI） ---------- */
+function sendMessage(){
+  if(!currentCharId) return;
+  const input=$('msgInput');
+  const text=input.value.trim();
+  if(!text) return;
+
+  if(!data.chats[currentCharId]) data.chats[currentCharId]=[];
+  data.chats[currentCharId].push({role:'user',content:text,ts:Date.now()});
+  input.value='';
+  saveData();
+  renderMessages();
+  updateRecvBtn();
+}
+
+/* ---------- 接收（点了才请求 AI） ---------- */
+async function receiveMessage(){
+  if(busy||!currentCharId) return;
+  const c=getChar(currentCharId);
+  const chat=data.chats[currentCharId];
+  if(!c||!chat||!chat.length) return;
+
+  if(!data.settings.apiKey){
+    toast('请先到「API设置」填写 Key');
+    return;
+  }
+
+  busy=true;
+  updateRecvBtn();
+  $('sendBtn').disabled=true;
+
+  const chatIdAt=currentCharId;
+  const box=$('messages');
+
+  // 打字动画
+  const typing=document.createElement('div');
+  typing.className='msg-row them';
+  typing.innerHTML=`<div class="avatar">${esc(c.avatar)}</div>
+    <div class="bubble typing"><i></i><i></i><i></i></div>`;
+  box.appendChild(typing);
+  box.scrollTop=box.scrollHeight;
+
+  let acc='', bubbleEl=null;
+
+  const onDelta=(delta)=>{
+    if(currentCharId!==chatIdAt) return;
+    if(!bubbleEl){
+      typing.remove();
+      const row=document.createElement('div');
+      row.className='msg-row them';
+      row.innerHTML=`<div class="avatar">${esc(c.avatar)}</div><div class="bubble"></div>`;
+      box.appendChild(row);
+      bubbleEl=row.querySelector('.bubble');
+    }
+    acc+=delta;
+    bubbleEl.textContent=acc;
+    box.scrollTop=box.scrollHeight;
+  };
+
+  try{
+    const turns=Math.max(2, parseInt(data.settings.memoryTurns,10)||20);
+    const hist=chat.slice(-turns*2);
+    const messages=buildMessages(c,hist);
+    const reply=await callChat(messages,onDelta);
+
+    typing.remove();
+    if(!acc) acc=reply||'';
+    if(!acc.trim()) acc='（……）';
+
+    chat.push({role:'assistant',content:acc,ts:Date.now(),read:currentCharId===chatIdAt});
+    saveData();
+    if(currentCharId===chatIdAt) renderMessages();
+  }catch(err){
+    typing.remove();
+    if(bubbleEl) bubbleEl.parentElement.remove();
+    if(currentCharId===chatIdAt){
+      const el=document.createElement('div');
+      el.className='sys-msg';
+      el.textContent='出错了：'+(err.message||err);
+      box.appendChild(el);
+      box.scrollTop=box.scrollHeight;
+    }
+  }finally{
+    busy=false;
+    $('sendBtn').disabled=false;
+    updateRecvBtn();
+    renderHome();
+  }
+}
+
+/* ==========================================================
+   提示词构建（含世界书）
+   ========================================================== */
+function buildSystemPrompt(c, wb){
+  const before=wb.filter(e=>e.position==='before').map(e=>e.content);
+  const middle=wb.filter(e=>e.position==='middle').map(e=>e.content);
+  const after =wb.filter(e=>e.position==='after').map(e=>e.content);
+
+  const parts=[];
+  if(before.length) parts.push(before.join('\n'));
+
+  const intro = c.isGroup
+    ? `你正在扮演群聊「${c.name}」中的一位成员。群成员有：${(c.members||[]).map(id=>(getChar(id)||{}).name).filter(Boolean).join('、')}。请以其中一位成员的身份自然发言。`
+    : `你现在正在扮演「${c.name}」，通过手机聊天软件和用户聊天。`;
+
+  parts.push(intro);
+  parts.push(`【你的人设】\n${c.persona||'性格温和，善于倾听。'}`);
+
+  if(middle.length) parts.push(middle.join('\n'));
+
+  parts.push(`【关于用户】\n${data.settings.userPersona||'一个普通的年轻人。'}`);
+  parts.push(`【聊天规则】
+1. 永远以角色身份说话，绝不承认自己是 AI、模型或程序。
+2. 像真人发微信一样：口语化、简短自然，一般 1～3 句话，不要长篇大论。
+3. 可以偶尔用括号描写动作或表情，比如（笑）（歪头看你），但不要滥用。
+4. 不要使用 Markdown，不要用列表、标题、星号加粗。
+5. 保持人设的说话习惯和情绪，可以主动抛话题或反问。
+6. 不要重复用户说过的话。`);
+
+  if(after.length) parts.push(after.join('\n'));
+
+  return parts.join('\n\n');
+}
+
+function buildMessages(c, history){
+  const wb=(data.worldbook||[]).filter(e=>e.enabled!==false);
+  const sys=buildSystemPrompt(c,wb);
+  const out=[{role:'system',content:sys}];
+
+  const hist=history.map(m=>({role:m.role,content:m.content}));
+
+  // 深度插入（从深到浅，避免索引互相影响）
+  const depthItems=wb.filter(e=>e.position==='depth')
+    .sort((a,b)=>(b.depth||0)-(a.depth||0));
+  for(const item of depthItems){
+    const d=Math.max(0, parseInt(item.depth,10)||0);
+    const idx=Math.max(0, hist.length-d);
+    hist.splice(idx,0,{
+      role: item.sender==='user' ? 'user' : 'system',
+      content: item.content
+    });
+  }
+
+  return out.concat(hist);
+}
+
+/* ==========================================================
+   API 调用（流式）
+   ========================================================== */
+async function callChat(messages, onDelta){
+  const s=data.settings;
+  let base=(s.baseURL||'').trim().replace(/\/+$/,'');
+  const url=base.endsWith('/chat/completions') ? base : base+'/chat/completions';
+
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':'Bearer '+s.apiKey
+    },
+    body:JSON.stringify({
+      model:s.model||'deepseek-chat',
+      messages,
+      stream:true,
+      temperature:0.9,
+      max_tokens:800
+    })
+  });
+
+  if(!res.ok){
+    let t='';
+    try{ t=await res.text(); }catch(e){}
+    throw new Error(`HTTP ${res.status} ${t.slice(0,150)}`);
+  }
+
+  if(!res.body){
+    const j=await res.json();
+    const content=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
+    if(content&&onDelta) onDelta(content);
+    return content;
+  }
+
+  const reader=res.body.getReader();
+  const dec=new TextDecoder('utf-8');
+  let buf='', full='';
+
+  while(true){
+    const {done,value}=await reader.read();
+    if(done) break;
+    buf+=dec.decode(value,{stream:true});
+    const lines=buf.split('\n');
+    buf=lines.pop()||'';
+    for(const raw of lines){
+      const line=raw.trim();
+      if(!line.startsWith('data:')) continue;
+      const p=line.slice(5).trim();
+      if(!p||p==='[DONE]') continue;
+      try{
+        const j=JSON.parse(p);
+        const d=j.choices&&j.choices[0]&&j.choices[0].delta;
+        const txt=d&&(d.content||'');
+        if(txt){ full+=txt; if(onDelta) onDelta(txt); }
+      }catch(e){}
+    }
+  }
+  return full;
+}
+
+/* ==========================================================
+   模态框
+   ========================================================== */
+function showModal(title, html, onMount){
+  $('modalTitle').textContent=title;
+  $('modalBody').innerHTML=html;
+  $('modalMask').classList.add('show');
+  if(onMount) onMount($('modalBody'));
+}
+function closeModal(){
+  $('modalMask').classList.remove('show');
+}
+
+/* ==========================================================
+   联系人 / 群聊 / 人设 / 钱包
+   ========================================================== */
+function editContact(id){
+  const c=id?getChar(id):null;
+  const e=c||{name:'',avatar:'🙂',persona:'',greeting:''};
+
+  showModal(c?'编辑联系人':'创建联系人',`
+    <div class="mfield"><label>名字</label>
+      <input id="cName" value="${esc(e.name)}" placeholder="角色名"></div>
+    <div class="mfield"><label>头像 Emoji</label>
+      <input id="cAvatar" maxlength="6" value="${esc(e.avatar)}"></div>
+    <div class="mfield"><label>人设描述（越具体越像）</label>
+      <textarea id="cPersona" rows="6" placeholder="年龄、身份、性格、说话习惯…">${esc(e.persona)}</textarea></div>
+    <div class="mfield"><label>开场白（可选）</label>
+      <textarea id="cGreeting" rows="2">${esc(e.greeting)}</textarea></div>
+    <button class="btn" id="cSave">保存</button>
+    ${c?'<button class="btn danger" id="cDel" style="margin-top:10px">删除联系人</button>':''}
+  `,(root)=>{
+    root.querySelector('#cSave').onclick=()=>{
+      const name=root.querySelector('#cName').value.trim();
+      if(!name){ toast('请填名字'); return; }
+      const patch={
+        name,
+        avatar: root.querySelector('#cAvatar').value.trim()||'🙂',
+        persona: root.querySelector('#cPersona').value.trim(),
+        greeting: root.querySelector('#cGreeting').value.trim()
+      };
+      if(c) Object.assign(c,patch);
+      else data.characters.push({id:uid('c'),...patch,added:false,isGroup:false,members:[]});
+      saveData();
+      renderContactsTab();
+      closeModal();
+      toast('已保存');
+    };
+    const del=root.querySelector('#cDel');
+    if(del) del.onclick=()=>{
+      if(!confirm('删除「'+c.name+'」以及全部聊天记录？')) return;
+      data.characters=data.characters.filter(x=>x.id!==c.id);
+      delete data.chats[c.id];
+      saveData();
+      renderContactsTab();
+      closeModal();
+      renderHome();
+      toast('已删除');
+    };
+  });
+}
+
+function createGroup(){
+  const contacts=data.characters.filter(c=>!c.isGroup);
+  if(contacts.length<2){ toast('至少需要 2 个联系人才能建群'); return; }
+
+  showModal('创建群聊',`
+    <div class="mfield"><label>群名称</label>
+      <input id="gName" placeholder="例如：深夜唠嗑群"></div>
+    <div class="mfield"><label>选择成员（至少 2 个）</label>
+      <div class="check-list" id="gMembers">
+        ${contacts.map(c=>`<label class="check-item">
+          <input type="checkbox" value="${c.id}">
+          <span>${esc(c.avatar)} ${esc(c.name)}</span>
+        </label>`).join('')}
+      </div>
+    </div>
+    <button class="btn" id="gSave">创建并加入聊天</button>
+  `,(root)=>{
+    root.querySelector('#gSave').onclick=()=>{
+      const name=root.querySelector('#gName').value.trim();
+      const members=Array.from(root.querySelectorAll('#gMembers input:checked')).map(x=>x.value);
+      if(!name){ toast('请填群名称'); return; }
+      if(members.length<2){ toast('至少选 2 个成员'); return; }
+
+      const id=uid('g');
+      data.characters.push({
+        id, name, avatar:'👥',
+        persona:`群聊成员：${members.map(m=>(getChar(m)||{}).name).join('、')}。以群里一位成员的身份自然发言。`,
+        greeting:'', added:true, isGroup:true, members
+      });
+      data.chats[id]=[];
+      saveData();
+      renderContactsTab();
+      closeModal();
+      toast('群聊已创建，已自动加入聊天列表');
+    };
+  });
+}
+
+function editWallet(){
+  showModal('钱包',`
+    <div class="mfield"><label>余额（元）</label>
+      <input id="wBal" type="number" step="0.01" value="${data.wallet.balance||0}"></div>
+    <button class="btn" id="wSave">保存</button>
+  `,(root)=>{
+    root.querySelector('#wSave').onclick=()=>{
+      data.wallet.balance=parseFloat(root.querySelector('#wBal').value)||0;
+      saveData(); renderMeTab(); closeModal();
+    };
+  });
+}
+
+function editPersona(){
+  showModal('我的人设',`
+    <div class="mfield"><label>昵称</label>
+      <input id="pName" value="${esc(data.user.name)}"></div>
+    <div class="mfield"><label>头像 Emoji</label>
+      <input id="pAvatar" maxlength="6" value="${esc(data.user.avatar)}"></div>
+    <div class="mfield"><label>我的设定（让角色知道你是谁）</label>
+      <textarea id="pPersona" rows="5" placeholder="年龄、身份、性格…">${esc(data.settings.userPersona)}</textarea></div>
+    <button class="btn" id="pSave">保存</button>
+  `,(root)=>{
+    root.querySelector('#pSave').onclick=()=>{
+      data.user.name=root.querySelector('#pName').value.trim()||'我';
+      data.user.avatar=root.querySelector('#pAvatar').value.trim()||'🙂';
+      data.settings.userPersona=root.querySelector('#pPersona').value.trim();
+      saveData(); renderMeTab(); closeModal(); toast('已保存');
+    };
+  });
+}
+
+/* ==========================================================
+   朋友圈
+   ========================================================== */
+function momentMenu(){
+  showModal('朋友圈',`
+    <button class="btn" id="mUserPost">发朋友圈</button>
+    <button class="btn secondary" id="mCharPost" style="margin-top:10px">指定角色发朋友圈</button>
+  `,(root)=>{
+    root.querySelector('#mUserPost').onclick=()=>{ closeModal(); userPostMoment(); };
+    root.querySelector('#mCharPost').onclick=()=>{ closeModal(); charPostMoment(); };
+  });
+}
+
+function userPostMoment(){
+  showModal('发朋友圈',`
+    <div class="mfield"><label>说点什么…</label>
+      <textarea id="mText" rows="5" placeholder="今天…"></textarea></div>
+    <button class="btn" id="mPost">发布</button>
+  `,(root)=>{
+    root.querySelector('#mPost').onclick=()=>{
+      const text=root.querySelector('#mText').value.trim();
+      if(!text){ toast('写点什么吧'); return; }
+      data.moments.push({
+        id:uid('m'), authorId:'user',
+        authorName:data.user.name, authorAvatar:data.user.avatar,
+        content:text, ts:Date.now()
+      });
+      saveData(); closeModal(); renderMomentsTab(); toast('已发布');
+    };
+  });
+}
+
+function charPostMoment(){
+  const chars=data.characters.filter(c=>!c.isGroup);
+  if(!chars.length){ toast('先创建联系人'); return; }
+
+  showModal('指定角色发朋友圈',`
+    <div class="mfield"><label>选择角色</label>
+      <select id="mChar">
+        ${chars.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="mfield"><label>发几条（1～10）</label>
+      <input id="mCount" type="number" min="1" max="10" value="1"></div>
+    <button class="btn" id="mGen">生成</button>
+  `,(root)=>{
+    root.querySelector('#mGen').onclick=()=>{
+      const cid=root.querySelector('#mChar').value;
+      let n=parseInt(root.querySelector('#mCount').value,10)||1;
+      n=Math.max(1,Math.min(10,n));
+      closeModal();
+      generateMoments(cid,n);
+    };
+  });
+}
+
+async function generateMoments(charId, count){
+  const c=getChar(charId);
+  if(!c) return;
+  if(!data.settings.apiKey){ toast('请先到「API设置」填写 Key'); return; }
+
+  toast('正在生成 '+count+' 条朋友圈…', 30000);
+
+  const prompt=`请你以「${c.name}」的身份写 ${count} 条朋友圈。你的人设：${c.persona||'一个普通年轻人'}。
+
+要求：
+1. 每一条都是独立的朋友圈，内容各不相同，像真人随手发的生活动态。
+2. 每条 15～60 字，口语化，可以带一点情绪或小细节。
+3. 只输出一个 JSON 数组，例如 ["内容一", "内容二"]，不要输出任何其他文字，不要用 Markdown 代码块。`;
+
+  const messages=[
+    {role:'system',content:'你是一个严格只输出 JSON 数组的助手。'},
+    {role:'user',content:prompt}
+  ];
+
+  try{
+    const raw=await callChat(messages,null);
+    let arr=parseJsonArray(raw);
+    if(!arr||!arr.length) throw new Error('返回内容无法解析');
+    arr=arr.slice(0,count);
+    const now=Date.now();
+    arr.forEach((text,i)=>{
+      data.moments.push({
+        id:uid('m'),
+        authorId:c.id, authorName:c.name, authorAvatar:c.avatar,
+        content:String(text), ts:now-i*60000
+      });
+    });
+    saveData();
+    renderMomentsTab();
+    toast('已生成 '+arr.length+' 条朋友圈');
+  }catch(e){
+    toast('生成失败：'+(e.message||e));
+  }
+}
+
+function parseJsonArray(text){
+  if(!text) return null;
+  let s=text.trim();
+  s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+  const a=s.indexOf('['), b=s.lastIndexOf(']');
+  if(a>=0&&b>a){
+    try{
+      const arr=JSON.parse(s.slice(a,b+1));
+      if(Array.isArray(arr)){
+        return arr.map(x=>{
+          if(typeof x==='string') return x;
+          if(x&&typeof x==='object') return x.content||x.text||JSON.stringify(x);
+          return String(x);
+        }).filter(Boolean);
+      }
+    }catch(e){}
+  }
+  return s.split('\n').map(x=>x.trim()).filter(Boolean);
+}
+
+/* ==========================================================
+   世界书
+   ========================================================== */
+function posLabel(p){
+  return {before:'前',middle:'中',after:'后',depth:'深度'}[p]||'前';
+}
+
+function renderWorldbook(){
+  const body=$('wbBody');
+  const list=data.worldbook||[];
+
+  if(!list.length){
+    body.innerHTML='<div class="empty-tip">还没有条目<br>点右上角 ＋ 创建</div>';
+    return;
+  }
+  body.innerHTML=list.map(e=>`
+    <div class="wb-item" data-wid="${e.id}">
+      <div class="wb-title">${esc(e.name)}</div>
+      <div class="wb-meta">位置：${posLabel(e.position)}${e.position==='depth'?' · 深度 '+e.depth+' · '+(e.sender==='user'?'用户':'系统'):''}</div>
+      <div class="wb-content">${esc(truncate(e.content,90))}</div>
+    </div>`).join('');
+
+  body.querySelectorAll('.wb-item').forEach(el=>{
+    el.addEventListener('click',()=>editWorldbook(el.dataset.wid));
+  });
+}
+
+function editWorldbook(id){
+  const entry=id?data.worldbook.find(x=>x.id===id):null;
+  const e=entry||{name:'',content:'',position:'before',depth:0,sender:'system'};
+
+  showModal(entry?'编辑条目':'新建条目',`
+    <div class="mfield"><label>条目名称</label>
+      <input id="wbName" value="${esc(e.name)}" placeholder="例如：世界观设定"></div>
+    <div class="mfield"><label>条目内容</label>
+      <textarea id="wbContent" rows="6" placeholder="写你要注入的内容…">${esc(e.content)}</textarea></div>
+    <div class="mfield"><label>插入位置</label>
+      <div class="seg" id="wbPos">
+        <button data-v="before">前</button>
+        <button data-v="middle">中</button>
+        <button data-v="after">后</button>
+        <button data-v="depth">深度</button>
+      </div>
+    </div>
+    <div id="wbDepthBox">
+      <div class="mfield"><label>深度（0 = 对话最末端，数字越大越靠前）</label>
+        <input id="wbDepth" type="number" min="0" value="${e.depth||0}"></div>
+      <div class="mfield"><label>发送者</label>
+        <div class="seg" id="wbSender">
+          <button data-v="user">用户</button>
+          <button data-v="system">系统</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn" id="wbSave">保存</button>
+    ${entry?'<button class="btn danger" id="wbDel" style="margin-top:10px">删除</button>':''}
+  `,(root)=>{
+    let pos=e.position, sender=e.sender||'system';
+    const posBtns=root.querySelectorAll('#wbPos button');
+    const senderBtns=root.querySelectorAll('#wbSender button');
+    const depthBox=root.querySelector('#wbDepthBox');
+
+    function refresh(){
+      posBtns.forEach(b=>b.classList.toggle('active',b.dataset.v===pos));
+      senderBtns.forEach(b=>b.classList.toggle('active',b.dataset.v===sender));
+      depthBox.style.display = pos==='depth' ? '' : 'none';
+    }
+    posBtns.forEach(b=>b.onclick=()=>{ pos=b.dataset.v; refresh(); });
+    senderBtns.forEach(b=>b.onclick=()=>{ sender=b.dataset.v; refresh(); });
+    refresh();
+
+    root.querySelector('#wbSave').onclick=()=>{
+      const name=root.querySelector('#wbName').value.trim();
+      const content=root.querySelector('#wbContent').value.trim();
+      if(!name){ toast('请填条目名称'); return; }
+      const depth=Math.max(0, parseInt(root.querySelector('#wbDepth').value,10)||0);
+      if(entry) Object.assign(entry,{name,content,position:pos,depth,sender});
+      else data.worldbook.push({id:uid('wb'),name,content,position:pos,depth,sender,enabled:true});
+      saveData();
+      renderWorldbook();
+      closeModal();
+      toast('已保存');
+    };
+
+    const del=root.querySelector('#wbDel');
+    if(del) del.onclick=()=>{
+      if(!confirm('删除这个条目？')) return;
+      data.worldbook=data.worldbook.filter(x=>x.id!==entry.id);
+      saveData();
+      renderWorldbook();
+      closeModal();
+      toast('已删除');
+    };
+  });
+}
+
+/* ==========================================================
+   添加聊天 / 创建菜单
+   ========================================================== */
+function openAddChatMenu(){
+  const available=data.characters.filter(c=>!c.added);
+  if(!available.length){ toast('所有联系人都已在聊天列表里了'); return; }
+
+  showModal('添加到聊天',`
+    <div class="check-list">
+      ${available.map(c=>`<div class="check-item" data-cid="${c.id}" style="cursor:pointer">
+        <span style="font-size:20px">${esc(c.avatar)}</span>
+        <span>${esc(c.name)}</span>
+      </div>`).join('')}
+    </div>
+  `,(root)=>{
+    root.querySelectorAll('.check-item').forEach(el=>{
+      el.onclick=()=>{
+        const c=getChar(el.dataset.cid);
+        if(c){
+          c.added=true;
+          ensureGreeting(c.id);
+          saveData();
+          renderChatsTab();
+          closeModal();
+          renderHome();
+          toast('已添加 '+c.name);
+        }
+      };
+    });
+  });
+}
+
+function openAddContactMenu(){
+  showModal('创建',`
+    <button class="btn" id="acNew">创建联系人</button>
+    <button class="btn secondary" id="acGroup" style="margin-top:10px">创建群聊</button>
+  `,(root)=>{
+    root.querySelector('#acNew').onclick=()=>{ closeModal(); editContact(null); };
+    root.querySelector('#acGroup').onclick=()=>{ closeModal(); createGroup(); };
+  });
+}
+
+/* ==========================================================
+   设置页
+   ========================================================== */
+function openApiSettings(){
+  $('setBaseURL').value=data.settings.baseURL||'';
+  $('setApiKey').value=data.settings.apiKey||'';
+  $('setModel').value=data.settings.model||'';
+  showView('api');
+}
+function saveApiSettings(){
+  data.settings.baseURL=$('setBaseURL').value.trim();
+  data.settings.apiKey=$('setApiKey').value.trim();
+  data.settings.model=$('setModel').value.trim();
+  saveData();
+  toast('已保存');
+}
+function openMemorySettings(){
+  $('setMemory').value=data.settings.memoryTurns||20;
+  showView('memory');
+}
+function saveMemorySettings(){
+  data.settings.memoryTurns=Math.max(2,Math.min(100, parseInt($('setMemory').value,10)||20));
+  saveData();
+  toast('已保存');
+}
+
+/* ---------- 清空聊天 ---------- */
+function clearChat(){
+  if(!currentCharId) return;
+  const c=getChar(currentCharId);
+  if(!confirm('清空与「'+(c?c.name:'')+'」的全部聊天记录？')) return;
+  data.chats[currentCharId]=[];
+  if(c&&c.greeting){
+    data.chats[currentCharId].push({role:'assistant',content:c.greeting,ts:Date.now(),read:true});
+  }
+  saveData();
+  renderMessages();
+  updateRecvBtn();
+  toast('已清空');
+}
+
+/* ---------- 数据导入导出 ---------- */
+function exportData(){
+  const s=JSON.stringify(data,null,2);
+  $('importArea').value=s;
+  try{
+    navigator.clipboard.writeText(s);
+    toast('已复制到剪贴板');
+  }catch(e){
+    toast('已导出到下方文本框，请手动复制');
+  }
+}
+function importData(){
+  const s=$('importArea').value.trim();
+  if(!s){ toast('请先粘贴 JSON'); return; }
+  try{
+    const p=JSON.parse(s);
+    if(!p||!Array.isArray(p.characters)) throw new Error('格式不对');
+    data=p;
+    data.settings=Object.assign(clone(DEFAULT_DATA.settings), data.settings||{});
+    data.user=Object.assign(clone(DEFAULT_DATA.user), data.user||{});
+    data.wallet=Object.assign(clone(DEFAULT_DATA.wallet), data.wallet||{});
+    data.chats=data.chats||{};
+    data.moments=data.moments||[];
+    data.worldbook=data.worldbook||[];
+    saveData();
+    renderHome();
+    showView('home');
+    toast('导入成功');
+  }catch(e){
+    toast('导入失败：'+e.message);
+  }
+}
+function clearAll(){
+  if(!confirm('确定清空全部数据？不可恢复！')) return;
+  if(!confirm('真的确定吗？')) return;
+  localStorage.removeItem(LS_KEY);
+  data=loadData();
+  renderHome();
+  showView('home');
+  toast('已清空');
+}
+
+/* ==========================================================
+   事件绑定 & 启动
+   ========================================================== */
+(function init(){
+  // 桌面
+  renderHome();
+
+  // 信息 App Tab
+  document.querySelectorAll('#view-info .tab').forEach(t=>{
+    t.addEventListener('click',()=>switchTab(t.dataset.tab));
+  });
+
+  // 返回主页
+  document.querySelectorAll('[data-go-home]').forEach(b=>{
+    b.addEventListener('click',()=>{ renderHome(); showView('home'); });
+  });
+
+  // 聊天返回
+  $('chatBack').addEventListener('click',()=>{
+    renderHome();
+    showView('info');
+    switchTab('chats');
+  });
+
+  // 发送 / 接收
+  $('sendBtn').addEventListener('click', sendMessage);
+  $('recvBtn').addEventListener('click', receiveMessage);
+  $('msgInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !e.isComposing){ e.preventDefault(); sendMessage(); }
+  });
+
+  // 添加聊天 / 联系人
+  $('addChatBtn').addEventListener('click', openAddChatMenu);
+  $('addContactBtn').addEventListener('click', openAddContactMenu);
+
+  // 朋友圈菜单
+  $('momentMenuBtn').addEventListener('click', momentMenu);
+
+  // 世界书
+  $('addWbBtn').addEventListener('click', ()=>editWorldbook(null));
+
+  // 设置保存
+  $('saveApiBtn').addEventListener('click', saveApiSettings);
+  $('saveMemoryBtn').addEventListener('click', saveMemorySettings);
+
+  // 清空聊天
+  $('clearChatBtn').addEventListener('click', clearChat);
+
+  // 数据
+  $('exportBtn').addEventListener('click', exportData);
+  $('importBtn').addEventListener('click', importData);
+  $('clearAllBtn').addEventListener('click', clearAll);
+
+  // 模态框
+  $('modalClose').addEventListener('click', closeModal);
+  $('modalMask').addEventListener('click', e=>{
+    if(e.target.id==='modalMask') closeModal();
+  });
+
+  // 时钟
+  tick();
+  setInterval(tick,1000);
+
+  // 默认打开桌面
+  showView('home');
+})();
+</script>
+</body>
+</html>
